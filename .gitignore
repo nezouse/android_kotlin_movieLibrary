@@ -180,4 +180,4 @@ fabric.properties
 hs_err_pid*
 
 app/google-services.json
-
+gradle.properties
