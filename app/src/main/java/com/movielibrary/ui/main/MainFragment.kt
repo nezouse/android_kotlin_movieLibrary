@@ -31,6 +31,7 @@ class MainFragment : Fragment() {
 
         val mainFragmentViewModel =
             ViewModelProviders.of(requireActivity()).get(MainFragmentViewModel::class.java)
+
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
 
