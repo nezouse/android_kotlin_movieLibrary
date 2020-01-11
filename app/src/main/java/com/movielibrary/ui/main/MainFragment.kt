@@ -1,7 +1,6 @@
 package com.movielibrary.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.movielibrary.R
 import com.movielibrary.databinding.MainFragmentBinding
 import com.movielibrary.network.Movie
@@ -34,6 +34,17 @@ class MainFragment : Fragment() {
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
 
+        val adapter = getDbAdapter()
+        binding.movieList.adapter = adapter
+
+        return binding.root
+    }
+
+    private fun getDbAdapter(): MainFragmentAdapter {
+        val db = FirebaseFirestore.getInstance()
+        db.firestoreSettings =
+            FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build()
+
         val query = FirebaseFirestore.getInstance()
             .collection("movies")
 
@@ -43,13 +54,7 @@ class MainFragment : Fragment() {
                 .setLifecycleOwner(this)
                 .build()
 
-        val adapter = MainFragmentAdapter(options)
-
-        binding.movieList.adapter = adapter
-
-
-        Log.i("QUERY", adapter.itemCount.toString())
-        return binding.root
+        return MainFragmentAdapter(options)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
