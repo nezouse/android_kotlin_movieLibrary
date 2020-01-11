@@ -27,7 +27,7 @@ private val retrofit = Retrofit.Builder()
 interface MovieApiService {
 
     @GET("popular?api_key=$apiKey")
-    fun getPropertiesAsync(): Deferred<MoviesResult<Movie>>
+    fun getPopularMoviesAsync(): Deferred<MoviesResult<Movie>>
 
     @GET("{movieId}?api_key=$apiKey")
     fun getMovieDetailsAsync(@Path("movieId") id: Int):

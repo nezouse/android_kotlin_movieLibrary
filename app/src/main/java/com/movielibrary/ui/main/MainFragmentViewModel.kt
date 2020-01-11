@@ -10,13 +10,26 @@ import kotlinx.coroutines.launch
 
 class MainFragmentViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-
+    private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
+
     fun getPopularMovies() {
         coroutineScope.launch {
-            val getPropertiesDeferred = MovieApi.retrofitService.getPropertiesAsync()
-            val listResult = getPropertiesDeferred.await().movieList
-            Log.i("INFO", listResult.toString())
+            val getResponseDeferred =
+                MovieApi.retrofitService.getPopularMoviesAsync()
+            val movieList = getResponseDeferred.await().movieList
+            movieList.forEach {
+                Log.i("POPULAR MOVIE", it.toString())
+            }
+        }
+    }
+
+    fun getMovieDetails() {
+        coroutineScope.launch {
+            val getResponseDeferred =
+                MovieApi.retrofitService.getMovieDetailsAsync(419704)
+            val movieDetails = getResponseDeferred.await()
+            Log.i("MOVIE DETAIL", movieDetails.toString())
         }
     }
 }
