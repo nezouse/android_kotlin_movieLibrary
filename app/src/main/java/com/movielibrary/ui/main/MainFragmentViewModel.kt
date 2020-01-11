@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainFragmentViewModel : ViewModel() {
     // TODO: Implement the ViewModel
     private var viewModelJob = Job()
 
