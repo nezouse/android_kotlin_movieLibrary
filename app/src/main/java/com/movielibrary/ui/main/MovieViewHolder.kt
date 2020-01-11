@@ -1,26 +1,21 @@
 package com.movielibrary.ui.main
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.movielibrary.R
+import com.movielibrary.databinding.MessageBinding
 import com.movielibrary.network.Movie
 
-class MovieViewHolder(view: View) :
-    RecyclerView.ViewHolder(view) {
-    fun bind(model: Movie) {
-//        model.title
-        Log.i("QUERY", model.title)
-//        binding.executePendingBindings()
+class MovieViewHolder private constructor(private val binding: MessageBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(movie: Movie) {
+        binding.movie = movie
     }
 
     companion object {
         fun from(parent: ViewGroup): MovieViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val view = layoutInflater.inflate(R.layout.message, parent, false)
-
+            val view = MessageBinding.inflate(layoutInflater, parent, false)
             return MovieViewHolder(view)
         }
     }
