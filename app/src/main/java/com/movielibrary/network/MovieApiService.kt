@@ -9,6 +9,7 @@ import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 private const val BASE_URL = "https://api.themoviedb.org/3/movie/"
 private const val apiKey = BuildConfig.API_KEY
@@ -26,8 +27,11 @@ private val retrofit = Retrofit.Builder()
 interface MovieApiService {
 
     @GET("popular?api_key=$apiKey")
-    fun getPropertiesAsync(): Deferred<MoviesResult>
+    fun getPropertiesAsync(): Deferred<MoviesResult<Movie>>
 
+    @GET("{movieId}?api_key=$apiKey")
+    fun getMovieDetailsAsync(@Path("movieId") id: Int):
+            Deferred<MovieDetails>
 }
 
 object MovieApi {

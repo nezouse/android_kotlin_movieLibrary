@@ -13,6 +13,13 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.movielibrary.R
 import com.movielibrary.databinding.MainFragmentBinding
 import com.movielibrary.network.Movie
+import com.movielibrary.network.MovieApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+
+
 
 class MainFragment : Fragment() {
 
@@ -21,6 +28,9 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainFragmentViewModel
+
+    private var viewModelJob = Job()
+    private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,8 +71,29 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainFragmentViewModel::class.java)
-        // TODO: Use the ViewModel
-//        viewModel.getPopularMovies()
+
+        getPopularMovies()
+        getMovieDetails()
+    }
+
+    fun getPopularMovies() {
+        coroutineScope.launch {
+            val getResponseDeferred =
+                MovieApi.retrofitService.getPopularMoviesAsync()
+            val movieList = getResponseDeferred.await().movieList
+            movieList.forEach {
+                Log.i("POPULAR MOVIE", it.toString())
+            }
+        }
+    }
+
+    fun getMovieDetails() {
+        coroutineScope.launch {
+            val getResponseDeferred =
+                MovieApi.retrofitService.getMovieDetailsAsync(419704)
+            val movieDetails = getResponseDeferred.await()
+            Log.i("MOVIE DETAIL", movieDetails.toString())
+        }
     }
 
 }
