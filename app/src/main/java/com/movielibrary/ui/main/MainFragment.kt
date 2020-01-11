@@ -12,6 +12,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.movielibrary.R
 import com.movielibrary.databinding.MainFragmentBinding
+import com.movielibrary.network.Movie
 
 class MainFragment : Fragment() {
 
@@ -36,16 +37,6 @@ class MainFragment : Fragment() {
         val query = FirebaseFirestore.getInstance()
             .collection("movies")
 
-//        query.get()
-//            .addOnSuccessListener { documents ->
-//                for (document in documents) {
-//                    Log.d("QUERY", "${document.id} => ${document.data}")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("QUERY", "Error getting documents: ", exception)
-//            }
-
         val options =
             FirestoreRecyclerOptions.Builder<Movie>()
                 .setQuery(query, Movie::class.java)
@@ -65,7 +56,7 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainFragmentViewModel::class.java)
         // TODO: Use the ViewModel
-        viewModel.getPopularMovies()
+//        viewModel.getPopularMovies()
     }
 
 }

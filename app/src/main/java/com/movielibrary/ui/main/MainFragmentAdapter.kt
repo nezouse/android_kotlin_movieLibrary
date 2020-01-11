@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.ViewGroup
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.movielibrary.network.Movie
 
 class MainFragmentAdapter(options: FirestoreRecyclerOptions<Movie>) :
     FirestoreRecyclerAdapter<Movie, MovieViewHolder>(options) {

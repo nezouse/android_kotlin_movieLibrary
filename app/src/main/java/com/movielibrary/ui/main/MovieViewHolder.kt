@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.movielibrary.R
-import com.movielibrary.databinding.MainFragmentBinding
+import com.movielibrary.network.Movie
 
 class MovieViewHolder(view: View) :
     RecyclerView.ViewHolder(view) {
