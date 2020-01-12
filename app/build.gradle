@@ -3,6 +3,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 apply from: "$project.rootDir/spotless.gradle"
 
 android {
@@ -16,6 +17,12 @@ android {
         versionName "1.0"
         buildConfigField "String", "API_KEY", KEY
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.incremental": "true"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -47,6 +54,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.1.0"
     implementation 'com.google.android.material:material:1.2.0-alpha03'
     implementation 'androidx.room:room-runtime:2.2.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt 'androidx.room:room-compiler:2.2.3'
 
     // Firebase dependencies

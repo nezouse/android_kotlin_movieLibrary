@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.movielibrary.database.MovieEntity
-import com.movielibrary.databinding.MovieOverviewBinding
+import com.movielibrary.databinding.MovieOverviewFragmentBinding
 
-class FragmentAdapter :
+class FragmentAdapter(private val clickListener: MovieListener) :
     ListAdapter<MovieEntity, MovieViewHolder>(MovieDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         return MovieViewHolder.from(parent)
@@ -16,20 +16,21 @@ class FragmentAdapter :
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = getItem(position)
-        holder.bind(movie)
+        holder.bind(movie, clickListener)
     }
 }
 
-class MovieViewHolder private constructor(private val binding: MovieOverviewBinding) :
+class MovieViewHolder private constructor(private val binding: MovieOverviewFragmentBinding) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(movie: MovieEntity) {
+    fun bind(movie: MovieEntity, clickListener: MovieListener) {
         binding.movie = movie
+        binding.clickListener = clickListener
     }
 
     companion object {
         fun from(parent: ViewGroup): MovieViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
-            val view = MovieOverviewBinding.inflate(layoutInflater, parent, false)
+            val view = MovieOverviewFragmentBinding.inflate(layoutInflater, parent, false)
             return MovieViewHolder(view)
         }
     }
@@ -43,4 +44,8 @@ class MovieDiffCallback : DiffUtil.ItemCallback<MovieEntity>() {
     override fun areContentsTheSame(oldItem: MovieEntity, newItem: MovieEntity): Boolean {
         return oldItem == newItem
     }
+}
+
+class MovieListener(val clickListener: (movieTitle: MovieEntity) -> Unit) {
+    fun onClick(movie: MovieEntity) = clickListener(movie)
 }
