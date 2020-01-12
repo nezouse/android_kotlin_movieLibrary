@@ -11,8 +11,8 @@
         android:label="MainFragment"
         tools:layout="@layout/main_fragment">
         <argument
-            android:name="movieTitle"
-            app:argType="string" />
+            android:name="movie"
+            app:argType="com.movielibrary.database.MovieEntity" />
         <action
             android:id="@+id/action_mainFragment_to_movieDetails"
             app:destination="@id/movieDetails" />
@@ -23,7 +23,7 @@
         android:label="movie_details_fragment"
         tools:layout="@layout/movie_details_fragment" >
         <argument
-            android:name="movieTitle"
-            app:argType="string" />
+            android:name="movie"
+            app:argType="com.movielibrary.database.MovieEntity" />
     </fragment>
 </navigation>

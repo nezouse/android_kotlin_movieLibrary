@@ -18,6 +18,8 @@ class FragmentAdapter(private val clickListener: MovieListener) :
         val movie = getItem(position)
         holder.bind(movie, clickListener)
     }
+
+
 }
 
 class MovieViewHolder private constructor(private val binding: MovieOverviewFragmentBinding) :
@@ -46,6 +48,6 @@ class MovieDiffCallback : DiffUtil.ItemCallback<MovieEntity>() {
     }
 }
 
-class MovieListener(val clickListener: (movieTitle: MovieEntity) -> Unit) {
-    fun onClick(movie: MovieEntity) = clickListener(movie)
+class MovieListener(val clickListener: (movieTitle: String) -> Unit) {
+    fun onClick(movie: MovieEntity) = clickListener(movie.title)
 }

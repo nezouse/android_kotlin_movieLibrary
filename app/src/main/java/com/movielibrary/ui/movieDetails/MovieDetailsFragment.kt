@@ -27,8 +27,6 @@ class MovieDetailsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.movieDetailsViewModel = viewModel
 
-
-
         return binding.root
     }
 
@@ -36,7 +34,7 @@ class MovieDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
             val args = PopularMoviesFragmentArgs.fromBundle(it)
-            binding?.movieDetailsViewModel?.movieId?.value = args.movieTitle
+            binding.movieDetailsViewModel?.movie?.value = args.movie
         }
 
     }

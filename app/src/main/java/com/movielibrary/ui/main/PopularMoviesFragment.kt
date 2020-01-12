@@ -33,15 +33,15 @@ class PopularMoviesFragment : Fragment() {
         binding.lifecycleOwner = this
 
 
-        val adapter = FragmentAdapter(MovieListener { movieTitle ->
-            mainFragmentViewModel.onMovieClicked(movieTitle)
+        val adapter = FragmentAdapter(MovieListener { movie ->
+            mainFragmentViewModel.onMovieClicked(movie)
         })
 
-        mainFragmentViewModel.navigateToDetailView.observe(this, Observer { movieTitle ->
-            movieTitle?.let {
+        mainFragmentViewModel.navigateToDetailView.observe(this, Observer { movie ->
+            movie?.let {
                 this.findNavController()
                     .navigate(
-                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(movieTitle)
+                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(movie)
                     )
                 mainFragmentViewModel.onMovieNavigated()
             }

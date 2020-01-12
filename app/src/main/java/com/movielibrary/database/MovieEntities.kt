@@ -1,10 +1,13 @@
 package com.movielibrary.database
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 @Entity(tableName = "movies_table")
 data class MovieEntity(
     @PrimaryKey(autoGenerate = true)
@@ -22,7 +25,7 @@ data class MovieEntity(
     val rating: Double = 0.0,
 
     val releaseDate: String = ""
-)
+) : Parcelable
 
 @Entity(
     tableName = "popular_movies_table",
