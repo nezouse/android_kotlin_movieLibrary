@@ -46,6 +46,12 @@ data class MovieDetails(
 ) : Parcelable
 
 @Parcelize
+data class SimpleMovie(
+    val id: Int = 0,
+    val title: String = ""
+) : Parcelable
+
+@Parcelize
 data class Genre(
     val id: Int,
     val name: String
