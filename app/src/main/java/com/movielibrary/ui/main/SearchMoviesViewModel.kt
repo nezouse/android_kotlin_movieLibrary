@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.network.MovieApi
 import com.movielibrary.network.SimpleMovie
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 class SearchMoviesViewModel(
     val database: MoviesDao, application: Application
 ) : AndroidViewModel(application) {
-//    var searchMoviesResult: LiveData<List<SimpleMovie>> = database.getPopularMovies()
+    var searchMoviesList: LiveData<List<MovieEntity>> = database.searchMovies()
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
@@ -30,8 +31,8 @@ class SearchMoviesViewModel(
             val getResponseDeferred = MovieApi.retrofitService.searchMoviesAsync("froze")
             val movieList = getResponseDeferred.await().movieList
             Log.i("MOVIES-QUERY", "Amount of found movies " + movieList.size.toString())
-//            Log.i("MOVIES-QUERY", searchMoviesResult.value.toString())
-//            searchMoviesResult.insertPopularMovies(*movieList.toEntity())
+            Log.i("MOVIES-QUERY-LIST", searchMoviesList.value.toString())
+            database.insertPopularMovies(*movieList.toEntity())
         }
     }
 }
