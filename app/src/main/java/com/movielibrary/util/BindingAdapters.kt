@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 
 @BindingAdapter("imageUrl")
 fun bindImage(imgView: ImageView, imgUrl: String?) {
-    val completeUrl = "http://image.tmdb.org/t/p/w185$imgUrl"
+    val completeUrl = "http://image.tmdb.org/t/p/w500$imgUrl"
     imgUrl?.let {
         val imgUri = completeUrl.toUri().buildUpon().build()
         Glide.with(imgView.context)
