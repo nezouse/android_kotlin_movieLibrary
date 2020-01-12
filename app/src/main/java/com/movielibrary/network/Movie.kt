@@ -1,6 +1,7 @@
 package com.movielibrary.network
 
 import android.os.Parcelable
+import com.movielibrary.database.MovieEntity
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 
@@ -14,6 +15,20 @@ data class Movie(
     @Json(name = "vote_average") val rating: Double,
     @Json(name = "release_date") val releaseDate: String
 ) : Parcelable
+
+fun List<Movie>.toEntity(): Array<MovieEntity> {
+    return map {
+        MovieEntity(
+            id = it.id,
+            title = it.title,
+            overview = it.overview,
+            popularity = it.popularity,
+            posterPath = it.posterPath,
+            rating = it.rating,
+            releaseDate = it.releaseDate
+        )
+    }.toTypedArray()
+}
 
 @Parcelize
 data class MovieDetails(

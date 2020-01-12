@@ -7,7 +7,7 @@
 
         <variable
             name="mainFragmentViewModel"
-            type="com.movielibrary.ui.main.MainFragmentViewModel" />
+            type="com.movielibrary.ui.main.PopularMoviesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

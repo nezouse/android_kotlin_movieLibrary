@@ -29,7 +29,6 @@ abstract class MoviesDatabase : RoomDatabase() {
                 }
                 return instance
             }
-
         }
     }
 }

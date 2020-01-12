@@ -9,10 +9,10 @@ import androidx.room.Query
 @Dao
 interface MoviesDao {
 
-    @Query("SELECT * FROM popular_movies_table")
+    @Query("SELECT * FROM popular_movies_table ORDER BY popularity")
     fun getPopularMovies(): LiveData<List<MovieEntity>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPopularMovies(vararg movies: MovieEntity)
 
 
