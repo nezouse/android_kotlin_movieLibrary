@@ -16,7 +16,7 @@ data class Movie(
     @Json(name = "release_date") val releaseDate: String
 ) : Parcelable
 
-fun List<Movie>.toEntity(): Array<MovieEntity> {
+fun List<Movie>.toEntity(): List<MovieEntity> {
     return map {
         MovieEntity(
             id = it.id,
@@ -27,7 +27,7 @@ fun List<Movie>.toEntity(): Array<MovieEntity> {
             rating = it.rating,
             releaseDate = it.releaseDate
         )
-    }.toTypedArray()
+    }
 }
 
 @Parcelize
