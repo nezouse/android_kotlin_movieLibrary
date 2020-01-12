@@ -15,11 +15,6 @@ import com.movielibrary.databinding.MainFragmentBinding
 import com.movielibrary.network.Movie
 
 class MainFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
     private lateinit var viewModel: MainFragmentViewModel
 
     override fun onCreateView(
