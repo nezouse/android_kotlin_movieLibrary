@@ -1,13 +1,13 @@
 package com.movielibrary.ui.main
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
 import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.databinding.MainFragmentBinding
@@ -43,6 +43,20 @@ class MainFragment : Fragment() {
 
         binding.movieList.adapter = adapter
 
+        setHasOptionsMenu(true)
         return binding.root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.search_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return NavigationUI.onNavDestinationSelected(
+            item,
+            view!!.findNavController()
+        ) || super.onOptionsItemSelected(item)
+    }
+
 }
