@@ -8,6 +8,10 @@
         <variable
             name="movie"
             type="com.movielibrary.database.MovieEntity" />
+
+        <variable
+            name="clickListener"
+            type="com.movielibrary.ui.main.MovieListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -17,7 +21,8 @@
         android:layout_marginTop="4dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="4dp"
-        android:minHeight="200dp">
+        android:minHeight="200dp"
+        android:onClick="@{() -> clickListener.onClick(movie)}">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

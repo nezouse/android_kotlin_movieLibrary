@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.movielibrary.R
 import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.databinding.MainFragmentBinding
@@ -33,7 +34,19 @@ class PopularMoviesFragment : Fragment() {
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
 
-        val adapter = FragmentAdapter()
+        val adapter = FragmentAdapter(MovieListener { movie ->
+            mainFragmentViewModel.onMovieClicked(movie)
+        })
+
+        mainFragmentViewModel.navigateToDetailView.observe(this, Observer { movie ->
+            movie?.let {
+                this.findNavController()
+                    .navigate(
+                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(movie)
+                    )
+                mainFragmentViewModel.onMovieNavigated()
+            }
+        })
 
         mainFragmentViewModel.popularMoviesList.observe(viewLifecycleOwner, Observer {
             it?.let {
