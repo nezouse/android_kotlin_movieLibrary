@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.movielibrary.ui.main.MainFragment"
+        android:name="com.movielibrary.ui.main.PopularMoviesFragment"
         android:label="MainFragment" />
 </navigation>

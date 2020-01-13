@@ -1,6 +1,5 @@
 package com.movielibrary.network
 
-import android.util.Log
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.movielibrary.BuildConfig
 import com.squareup.moshi.Moshi

@@ -2,7 +2,6 @@ package com.movielibrary
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.appbar.CollapsingToolbarLayout
 
 class MainActivity : AppCompatActivity() {
 
