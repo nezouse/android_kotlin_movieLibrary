@@ -33,5 +33,12 @@
         android:id="@+id/searchFragment"
         android:name="com.movielibrary.ui.main.SearchFragment"
         android:label="fragment_search"
-        tools:layout="@layout/search_fragment" />
+        tools:layout="@layout/search_fragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_movieDetails"
+            app:destination="@id/movieDetails" />
+        <argument
+            android:name="movie"
+            app:argType="com.movielibrary.database.MovieEntity" />
+    </fragment>
 </navigation>

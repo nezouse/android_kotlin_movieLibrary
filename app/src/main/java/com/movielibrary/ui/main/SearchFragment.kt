@@ -10,8 +10,10 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
 import com.movielibrary.database.MoviesDatabase
@@ -39,6 +41,16 @@ class SearchFragment : Fragment() {
 
         binding.searchFragmentViewModel = searchMoviesViewModel
         binding.lifecycleOwner = this
+
+        searchMoviesViewModel.navigateToDetailView.observe(this, Observer { movie ->
+            movie?.let {
+                this.findNavController()
+                    .navigate(
+                        SearchFragmentDirections.actionSearchFragmentToMovieDetails(movie)
+                    )
+                searchMoviesViewModel.onMovieNavigated()
+            }
+        })
 
         connectAdapter(binding)
 

@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.movielibrary.R
 import com.movielibrary.databinding.MovieDetailsFragmentBinding
-import com.movielibrary.ui.main.PopularMoviesFragmentArgs
 
 class MovieDetailsFragment : Fragment() {
 
@@ -34,7 +33,7 @@ class MovieDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
-            val args = PopularMoviesFragmentArgs.fromBundle(it)
+            val args = MovieDetailsFragmentArgs.fromBundle(it)
             binding.movieDetailsViewModel?.movie?.value = args.movie
         }
     }
