@@ -9,11 +9,11 @@ import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.network.MovieApi
 import com.movielibrary.network.toEntity
-import java.util.LinkedList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.LinkedList
 
 class SearchMoviesViewModel(
     val database: MoviesDao,
@@ -27,6 +27,13 @@ class SearchMoviesViewModel(
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
+
+    init {
+        coroutineScope.launch {
+            searchMoviesList.addAll(database.getRecentlyViewedMovies())
+            notifyAdapter()
+        }
+    }
 
     fun onMovieClicked(movie: MovieEntity) {
         _navigateToDetailView.value = movie
