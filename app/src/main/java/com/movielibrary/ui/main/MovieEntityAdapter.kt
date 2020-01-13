@@ -46,6 +46,6 @@ class MovieDiffCallback : DiffUtil.ItemCallback<MovieEntity>() {
     }
 }
 
-class MovieListener(val clickListener: (movieTitle: String) -> Unit) {
-    fun onClick(movie: MovieEntity) = clickListener(movie.title)
+class MovieListener(val clickListener: (movie: MovieEntity) -> Unit) {
+    fun onClick(movie: MovieEntity) = clickListener(movie)
 }
