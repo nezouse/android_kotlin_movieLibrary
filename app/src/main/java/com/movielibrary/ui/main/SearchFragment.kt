@@ -15,7 +15,7 @@ import com.movielibrary.databinding.SearchFragmentBinding
 class SearchFragment : Fragment() {
 
     lateinit var searchMoviesViewModel: SearchMoviesViewModel
-    private val adapter = FragmentAdapter()
+    private lateinit var adapter: FragmentAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,12 +34,19 @@ class SearchFragment : Fragment() {
         binding.searchFragmentViewModel = searchMoviesViewModel
         binding.lifecycleOwner = this
 
-        searchMoviesViewModel.adapter = adapter
-        adapter.submitList(searchMoviesViewModel.searchMoviesList)
-        binding.movieList.adapter = adapter
+        connectAdapter(binding)
 
         setHasOptionsMenu(true)
         return binding.root
+    }
+
+    fun connectAdapter(binding: SearchFragmentBinding){
+        adapter = FragmentAdapter(MovieListener { movie ->
+            searchMoviesViewModel.onMovieClicked(movie)
+        })
+        searchMoviesViewModel.adapter = adapter
+        adapter.submitList(searchMoviesViewModel.searchMoviesList)
+        binding.movieList.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

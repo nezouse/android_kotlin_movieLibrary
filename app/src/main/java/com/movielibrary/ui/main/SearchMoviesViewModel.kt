@@ -3,6 +3,8 @@ package com.movielibrary.ui.main
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.network.MovieApi
@@ -19,9 +21,20 @@ class SearchMoviesViewModel(
 ) : AndroidViewModel(application) {
     var searchMoviesList: LinkedList<MovieEntity> = LinkedList()
     lateinit var adapter: FragmentAdapter
+    private val _navigateToDetailView = MutableLiveData<MovieEntity>()
+    val navigateToDetailView: LiveData<MovieEntity>
+        get() = _navigateToDetailView
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
+
+    fun onMovieClicked(movie: MovieEntity) {
+        _navigateToDetailView.value = movie
+    }
+
+    fun onMovieNavigated() {
+        _navigateToDetailView.value = null
+    }
 
     fun getSearchResult(query: String?) {
         coroutineScope.launch {
