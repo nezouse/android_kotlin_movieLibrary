@@ -1,31 +1,28 @@
 package com.movielibrary.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
-import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDatabase
-import com.movielibrary.databinding.FragmentSearchBinding
+import com.movielibrary.databinding.SearchFragmentBinding
 
 class SearchFragment : Fragment() {
 
     lateinit var searchMoviesViewModel: SearchMoviesViewModel
-    val adapter = FragmentAdapter()
+    private val adapter = FragmentAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentSearchBinding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
+        val binding: SearchFragmentBinding =
+            DataBindingUtil.inflate(inflater, R.layout.search_fragment, container, false)
 
         val application = requireNotNull(this.activity).application
         val dataSource = MoviesDatabase.getInstance(application).moviesDao
@@ -62,9 +59,7 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 return true
             }
-
         })
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

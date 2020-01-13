@@ -33,7 +33,6 @@ class SearchMoviesViewModel(
                     database.insertMovies(*movieList.toEntity().toTypedArray())
                     val foundMovies = database.searchMovies("%$query%")
 
-                    //TODO optimize this dumb code
                     searchMoviesList.clear()
                     searchMoviesList.addAll(foundMovies)
 
@@ -45,7 +44,7 @@ class SearchMoviesViewModel(
         }
     }
 
-    fun notifyAdapter() {
+    private fun notifyAdapter() {
         coroutineScope.launch(Dispatchers.Main.immediate) {
             adapter.notifyDataSetChanged()
         }
