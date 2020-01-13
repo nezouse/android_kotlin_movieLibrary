@@ -12,9 +12,10 @@ import com.movielibrary.R
 import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.databinding.MainFragmentBinding
 
-class MainFragment : Fragment() {
+class PopularMoviesFragment : Fragment() {
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val binding: MainFragmentBinding =
@@ -31,7 +32,6 @@ class MainFragment : Fragment() {
 
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
-
 
         val adapter = FragmentAdapter()
 

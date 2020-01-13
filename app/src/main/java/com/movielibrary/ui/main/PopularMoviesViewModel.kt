@@ -15,7 +15,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class PopularMoviesViewModel(
-    val database: MoviesDao, application: Application
+    val database: MoviesDao,
+    application: Application
 ) : AndroidViewModel(application) {
     var popularMoviesList: LiveData<List<MovieEntity>> = database.getPopularMovies()
 

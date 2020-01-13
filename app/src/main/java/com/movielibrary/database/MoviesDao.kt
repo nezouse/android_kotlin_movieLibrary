@@ -13,7 +13,7 @@ interface MoviesDao {
     fun getPopularMovies(): LiveData<List<MovieEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertMovies(vararg movies: MovieEntity) : List<Long>
+    fun insertMovies(vararg movies: MovieEntity): List<Long>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertPopularMovies(vararg movies: PopularMovieEntity): List<Long>
