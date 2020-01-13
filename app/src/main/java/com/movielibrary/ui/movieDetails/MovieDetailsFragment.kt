@@ -15,9 +15,10 @@ class MovieDetailsFragment : Fragment() {
 
     lateinit var binding: MovieDetailsFragmentBinding
 
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.movie_details_fragment, container, false)
@@ -36,6 +37,5 @@ class MovieDetailsFragment : Fragment() {
             val args = PopularMoviesFragmentArgs.fromBundle(it)
             binding.movieDetailsViewModel?.movie?.value = args.movie
         }
-
     }
 }

@@ -15,7 +15,9 @@ import com.movielibrary.databinding.MainFragmentBinding
 
 class PopularMoviesFragment : Fragment() {
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         val binding: MainFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.main_fragment, container, false)
@@ -31,7 +33,6 @@ class PopularMoviesFragment : Fragment() {
 
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
-
 
         val adapter = FragmentAdapter(MovieListener { movie ->
             mainFragmentViewModel.onMovieClicked(movie)

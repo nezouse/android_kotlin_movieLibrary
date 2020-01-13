@@ -18,8 +18,6 @@ class FragmentAdapter(private val clickListener: MovieListener) :
         val movie = getItem(position)
         holder.bind(movie, clickListener)
     }
-
-
 }
 
 class MovieViewHolder private constructor(private val binding: MovieOverviewFragmentBinding) :
