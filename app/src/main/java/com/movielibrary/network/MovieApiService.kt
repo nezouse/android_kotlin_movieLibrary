@@ -39,7 +39,6 @@ interface MovieApiService {
     @GET("search/movie?api_key=$apiKey")
     fun searchMoviesAsync(@Query("query") query: String):
             Deferred<MoviesResult<Movie>>
-
 }
 
 object MovieApi {

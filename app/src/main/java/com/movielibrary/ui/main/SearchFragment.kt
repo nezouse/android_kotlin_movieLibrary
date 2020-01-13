@@ -1,7 +1,12 @@
 package com.movielibrary.ui.main
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -18,7 +23,8 @@ class SearchFragment : Fragment() {
     private lateinit var adapter: FragmentAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding: SearchFragmentBinding =
@@ -40,7 +46,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-    fun connectAdapter(binding: SearchFragmentBinding){
+    fun connectAdapter(binding: SearchFragmentBinding) {
         adapter = FragmentAdapter(MovieListener { movie ->
             searchMoviesViewModel.onMovieClicked(movie)
         })
