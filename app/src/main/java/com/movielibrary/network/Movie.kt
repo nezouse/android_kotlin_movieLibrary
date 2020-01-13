@@ -32,23 +32,17 @@ fun List<Movie>.toEntity(): List<MovieEntity> {
 
 @Parcelize
 data class MovieDetails(
-    val id: Int = 0,
-    val title: String = "",
-    val overview: String = "",
-    val popularity: Double = 0.0,
-    @Json(name = "poster_path") val posterPath: String = "",
-    @Json(name = "vote_average") val rating: Double = 0.0,
-    @Json(name = "release_date") val releaseDate: String = "",
-    val budget: Int = 0,
-    val revenue: Int = 0,
-    @Json(name = "runtime") val runTime: Int = 0,
+    val id: Int,
+    val title: String,
+    val overview: String,
+    val popularity: Double,
+    @Json(name = "poster_path") val posterPath: String,
+    @Json(name = "vote_average") val rating: Double,
+    @Json(name = "release_date") val releaseDate: String,
+    val budget: Int,
+    val revenue: Int,
+    @Json(name = "runtime") val runTime: Int,
     val genres: List<Genre> = emptyList()
-) : Parcelable
-
-@Parcelize
-data class SimpleMovie(
-    val id: Int = 0,
-    val title: String = ""
 ) : Parcelable
 
 @Parcelize

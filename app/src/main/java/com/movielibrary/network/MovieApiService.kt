@@ -16,19 +16,8 @@ import retrofit2.http.Query
 private const val BASE_URL = "https://api.themoviedb.org/3/"
 private const val apiKey = BuildConfig.API_KEY
 
-object NULL_TO_EMPTY_STRING_ADAPTER {
-    @FromJson
-    fun fromJson(reader: JsonReader): String {
-        if (reader.peek() != JsonReader.Token.NULL) {
-            return reader.nextString()
-        }
-        reader.nextNull<Unit>()
-        return ""
-    }
-}
-
 private val moshi = Moshi.Builder()
-    .add(NULL_TO_EMPTY_STRING_ADAPTER)
+    .add(NullStringAdapter)
     .add(KotlinJsonAdapterFactory())
     .build()
 
@@ -55,4 +44,15 @@ interface MovieApiService {
 
 object MovieApi {
     val retrofitService: MovieApiService by lazy { retrofit.create(MovieApiService::class.java) }
+}
+
+object NullStringAdapter {
+    @FromJson
+    fun fromJson(reader: JsonReader): String {
+        if (reader.peek() != JsonReader.Token.NULL) {
+            return reader.nextString()
+        }
+        reader.nextNull<Unit>()
+        return ""
+    }
 }
