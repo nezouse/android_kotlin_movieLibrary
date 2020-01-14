@@ -8,12 +8,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.movielibrary.database.Repository
 import kotlinx.android.synthetic.main.main_activity.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private final val RC_SIGN_IN = 10
+    private val RC_SIGN_IN = 10
     private val providers = arrayListOf(
         AuthUI.IdpConfig.EmailBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build()
@@ -24,6 +27,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.main_activity)
         setSupportActionBar(findViewById(R.id.toolbar))
         navigation.setNavigationItemSelectedListener(this)
+        FirebaseAuth.getInstance().currentUser?.let {
+            navigation.menu.findItem(R.id.login).title = "Logout"
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -47,16 +53,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
+            val response = IdpResponse.fromResultIntent(data)
             if (resultCode == Activity.RESULT_OK) {
                 navigation.menu.findItem(R.id.login).title = "Logout"
-            } else {
-                Toast.makeText(this, "There was an error while signing in", Toast.LENGTH_SHORT)
-                    .show()
+                if (response!!.isNewUser) {
+                    Repository.insertUser()
+                    Toast.makeText(this, "Thanks for registration", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Successfully logged in", Toast.LENGTH_SHORT).show()
+                }
             }
+        } else {
+            Toast.makeText(this, "There was an error while signing in", Toast.LENGTH_SHORT).show()
         }
     }
 
-    fun logIn() {
+    private fun logIn() {
         startActivityForResult(
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
@@ -66,7 +78,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
-    fun logOut() {
+    private fun logOut() {
         AuthUI.getInstance()
             .signOut(this)
             .addOnCompleteListener {
