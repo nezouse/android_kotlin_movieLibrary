@@ -3,4 +3,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rate_text">RATE THIS</string>
+    <string name="rate_button_text">Rate</string>
+    <string name="remove_button_text">Remove</string>
 </resources>
