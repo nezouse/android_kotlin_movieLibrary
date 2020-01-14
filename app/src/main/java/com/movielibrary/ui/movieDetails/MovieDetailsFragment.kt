@@ -1,7 +1,6 @@
 package com.movielibrary.ui.movieDetails
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,33 +17,31 @@ import com.movielibrary.databinding.MovieDetailsFragmentBinding
 
 class MovieDetailsFragment : Fragment() {
 
-    lateinit var binding: MovieDetailsFragmentBinding
-    lateinit var viewModel: MovieDetailsViewModel
     private val args: MovieDetailsFragmentArgs by navArgs()
+    lateinit var viewModel: MovieDetailsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(
+        val binding: MovieDetailsFragmentBinding = DataBindingUtil.inflate(
             inflater, R.layout.movie_details_fragment, container, false
         )
 
         val application = requireNotNull(this.activity).application
         val repository = Repository(application)
         val viewModelFactory = MovieDetailsViewModelFactory(repository, args.movie.id)
-        viewModel =
-            ViewModelProviders.of(this, viewModelFactory).get(MovieDetailsViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelFactory)
+            .get(MovieDetailsViewModel::class.java
+        )
 
+        val adapter = CommentAdapter()
 
         binding.lifecycleOwner = this
         binding.movieDetailsViewModel = viewModel
-        val adapter = CommentAdapter()
         binding.commentList.adapter = adapter
-        binding.movieDetailsViewModel?.movie?.value = args.movie
-        viewModel.addRecentlyViewedMovie(args.movie.id)
-
+        binding.movieDetailsViewModel!!.movie.value = args.movie
 
         binding.userRatingIcon.setOnClickListener {
             viewModel.rateMovie(it as ImageView)
@@ -61,9 +58,11 @@ class MovieDetailsFragment : Fragment() {
             val body = binding.commentBody.text.toString()
             val movieId = args.movie.id
             viewModel.insertComment(CommentEntity(title, body, movieId))
-            Log.i("I/COMMENT", "Title: ${binding.commentTitle.text}")
-            Log.i("I/COMMENT", "Bocy: ${binding.commentBody.text}")
+            binding.commentTitle.setText("")
+            binding.commentBody.setText("")
         }
+
+        viewModel.addRecentlyViewedMovie(args.movie.id)
 
         return binding.root
     }
