@@ -2,8 +2,10 @@ package com.movielibrary.ui.movieDetails
 
 import android.app.Application
 import android.util.Log
+import android.widget.ImageView
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.movielibrary.R
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.database.RecentlyViewedMovie
@@ -30,5 +32,11 @@ class MovieDetailsViewModel(
                 Log.i("MOVIES/RECENT", e.toString())
             }
         }
+    }
+
+    fun rateMovie(imageView: ImageView){
+        //TODO add movie rating
+        imageView.setImageResource(R.drawable.star_blue)
+
     }
 }

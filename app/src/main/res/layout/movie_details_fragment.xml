@@ -74,40 +74,40 @@
                 app:layout_constraintTop_toBottomOf="@+id/movie_poster" />
 
             <ImageView
-                android:id="@+id/average_rating_img"
+                android:id="@+id/average_rating_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/average_rating"
-                app:layout_constraintEnd_toStartOf="@+id/user_rating_img"
+                app:layout_constraintEnd_toStartOf="@+id/user_rating_icon"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/star_yellow" />
 
             <ImageView
-                android:id="@+id/user_rating_img"
+                android:id="@+id/user_rating_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/user_rating"
-                app:layout_constraintEnd_toStartOf="@+id/user_favourite_img"
+                app:layout_constraintEnd_toStartOf="@+id/user_favourite_icon"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/average_rating_img"
+                app:layout_constraintStart_toEndOf="@+id/average_rating_icon"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/star_border" />
 
             <ImageView
-                android:id="@+id/user_favourite_img"
+                android:id="@+id/user_favourite_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:layout_constraintBottom_toTopOf="@+id/user_rating"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/user_rating_img"
+                app:layout_constraintStart_toEndOf="@+id/user_rating_icon"
                 app:layout_constraintTop_toBottomOf="@+id/view"
                 app:srcCompat="@drawable/favorite_border" />
 
@@ -118,8 +118,8 @@
                 android:layout_marginBottom="16dp"
                 android:text="RATE THIS"
                 app:layout_constraintBottom_toTopOf="@+id/view2"
-                app:layout_constraintEnd_toEndOf="@+id/user_rating_img"
-                app:layout_constraintStart_toStartOf="@+id/user_rating_img" />
+                app:layout_constraintEnd_toEndOf="@+id/user_rating_icon"
+                app:layout_constraintStart_toStartOf="@+id/user_rating_icon" />
 
             <TextView
                 android:id="@+id/average_rating"
@@ -127,8 +127,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{movieDetailsViewModel.movie.rating}"
                 app:layout_constraintBaseline_toBaselineOf="@+id/user_rating"
-                app:layout_constraintEnd_toEndOf="@+id/average_rating_img"
-                app:layout_constraintStart_toStartOf="@+id/average_rating_img"
+                app:layout_constraintEnd_toEndOf="@+id/average_rating_icon"
+                app:layout_constraintStart_toStartOf="@+id/average_rating_icon"
                 tools:text="2.0/10" />
 
             <View
