@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         AuthUI.IdpConfig.EmailBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build()
     )
+    lateinit var repository: Repository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FirebaseAuth.getInstance().currentUser?.let {
             navigation.menu.findItem(R.id.login).title = "Logout"
         }
+
+        repository = Repository(application)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (resultCode == Activity.RESULT_OK) {
                 navigation.menu.findItem(R.id.login).title = "Logout"
                 if (response!!.isNewUser) {
-                    Repository.insertUser()
+                    repository.insertUser()
                     Toast.makeText(this, "Thanks for registration", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Successfully logged in", Toast.LENGTH_SHORT).show()

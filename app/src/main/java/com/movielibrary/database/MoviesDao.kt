@@ -29,4 +29,10 @@ interface MoviesDao {
 
     @Query("SELECT mv.id, title, overview, popularity, poster_path, rating, releaseDate FROM movies_table AS mv INNER JOIN recently_viewed_table AS rvt ON mv.id=rvt.movie_id ORDER BY recentRank DESC LIMIT 20")
     fun getRecentlyViewedMovies(): List<MovieEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertComment(vararg comment: CommentEntity)
+
+    @Query("SELECT * FROM comments_table WHERE movieId = :movieId")
+    fun getCommentsForMovie(movieId: Int): LiveData<List<CommentEntity>>
 }

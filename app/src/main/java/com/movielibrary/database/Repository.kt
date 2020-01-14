@@ -1,17 +1,22 @@
 package com.movielibrary.database
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-object Repository {
-    private const val TAG = "I/FIRESTORE"
+class Repository(application: Application) {
+    private val TAG = "I/FIRESTORE"
     private var RepositoryJob = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + RepositoryJob)
-    private val dao = FirebaseDao.getDao()
+    private val firebaseDao = FirebaseDao.getDao()
+    private val roomDao = MoviesDatabase.getInstance(application).moviesDao
 
     fun insertUser() {
         coroutineScope.launch {
@@ -20,7 +25,7 @@ object Repository {
                 val userId = currentUser!!.uid
                 val email = currentUser.email ?: throw Exception("Failed to get email")
                 val userEntity = UserEntity(id = currentUser.uid, email = email)
-                dao.insertUser(userEntity)
+                firebaseDao.insertUser(userEntity)
                 Log.i(TAG, "DocumentSnapshot written with ID: $userId")
             } catch (e: Exception) {
                 Log.e(TAG, "Error adding document", e)
@@ -31,7 +36,9 @@ object Repository {
     fun insertUserComment(comment: CommentEntity) {
         coroutineScope.launch {
             try {
-                dao.insertUserComment(comment)
+                comment.userEmail = FirebaseAuth.getInstance().currentUser!!.email.toString()
+                firebaseDao.insertUserComment(comment)
+                roomDao.insertComment(comment)
                 Log.i(TAG, "DocumentSnapshot written with ID: ${comment.id}")
             } catch (e: Exception) {
                 Log.e(TAG, "Error adding document", e)
@@ -39,14 +46,43 @@ object Repository {
         }
     }
 
-    suspend fun getMovieComments(movieId: Int): List<CommentEntity> {
-        return try {
-            val comments: List<CommentEntity> = dao.getMovieComments(movieId)
-            Log.i(TAG, "DocumentSnapshots pulled correctly.")
-            comments
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting documents", e)
-            emptyList()
+    fun getMovieComments(id: Int): LiveData<List<CommentEntity>> {
+        return roomDao.getCommentsForMovie(id)
+    }
+
+    fun subscribeToComments(id: Int): ListenerRegistration {
+        Log.w(TAG, "Listener attached")
+        return firebaseDao.getCommentsQuery(id).addSnapshotListener { values, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+            coroutineScope.launch {
+                values?.forEach {
+                    roomDao.insertComment(it.toObject())
+                }
+            }
+        }
+    }
+
+    fun detachSubscription(listener: ListenerRegistration) {
+        Log.w(TAG, "Listener detached")
+        listener.remove()
+    }
+
+    fun addRecentlyViewedMovie(id: Int) {
+        coroutineScope.launch {
+            try {
+                val recentRank = roomDao.getMostRecentViewedMovieRank()
+                roomDao.insertRecentMovie(
+                    RecentlyViewedMovie(
+                        movieId = id,
+                        recentRank = recentRank + 1
+                    )
+                )
+            } catch (e: Exception) {
+                Log.i("MOVIES/RECENT", e.toString())
+            }
         }
     }
 }

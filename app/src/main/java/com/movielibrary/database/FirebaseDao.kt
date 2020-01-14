@@ -1,5 +1,6 @@
 package com.movielibrary.database
 
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
@@ -16,6 +17,10 @@ object FirebaseDao {
 
     suspend fun insertUserComment(comment: CommentEntity) {
         db.collection("comments").document(comment.id).set(comment).await()
+    }
+
+    fun getCommentsQuery(movieId: Int): Query {
+        return db.collection("comments").whereEqualTo("movieId", movieId)
     }
 
     suspend fun getMovieComments(movieId: Int): List<CommentEntity> {
