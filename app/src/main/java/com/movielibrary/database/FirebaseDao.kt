@@ -6,10 +6,8 @@ import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 
-object FirebaseDao {
+class FirebaseDao {
     private val db = Firebase.firestore
-
-    fun getDao() = this
 
     suspend fun insertUser(user: UserEntity) {
         db.collection("users").document(user.id).set(user).await()

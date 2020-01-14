@@ -1,6 +1,5 @@
 package com.movielibrary.database
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
@@ -11,12 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class Repository(application: Application) {
+class Repository(private val firebaseDao: FirebaseDao, private val roomDao: MoviesDao) {
     private val TAG = "I/FIRESTORE"
     private var RepositoryJob = Job()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + RepositoryJob)
-    private val firebaseDao = FirebaseDao.getDao()
-    private val roomDao = MoviesDatabase.getInstance(application).moviesDao
 
     fun insertUser() {
         coroutineScope.launch {

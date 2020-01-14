@@ -7,7 +7,7 @@
 
         <variable
             name="searchFragmentViewModel"
-            type="com.movielibrary.ui.main.SearchMoviesViewModel" />
+            type="com.movielibrary.ui.searchMovies.SearchMoviesViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            tools:context=".ui.main.SearchFragment"
+            tools:context=".ui.searchMovies.SearchFragment"
             tools:layout_editor_absoluteX="-16dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,6 +13,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.movielibrary.database.Repository
 import kotlinx.android.synthetic.main.main_activity.*
+import org.koin.android.ext.android.inject
 import org.koin.core.context.startKoin
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         AuthUI.IdpConfig.EmailBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build()
     )
-    lateinit var repository: Repository
+    private val repository: Repository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,8 +33,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         FirebaseAuth.getInstance().currentUser?.let {
             navigation.menu.findItem(R.id.login).title = "Logout"
         }
-
-        repository = Repository(application)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

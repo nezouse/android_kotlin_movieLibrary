@@ -1,4 +1,4 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.searchMovies
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -6,15 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
-import com.movielibrary.network.MovieApi
+import com.movielibrary.network.MovieApiService
 import com.movielibrary.network.toEntity
+import com.movielibrary.ui.recyclerAdapters.FragmentAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 
-class SearchMoviesViewModel(val database: MoviesDao) : ViewModel() {
+class SearchMoviesViewModel(
+    private val database: MoviesDao,
+    private val retrofitService: MovieApiService
+) : ViewModel() {
     var searchMoviesList: LinkedList<MovieEntity> = LinkedList()
     lateinit var adapter: FragmentAdapter
     private val _navigateToDetailView = MutableLiveData<MovieEntity>()
@@ -43,7 +47,7 @@ class SearchMoviesViewModel(val database: MoviesDao) : ViewModel() {
         coroutineScope.launch {
             try {
                 if (!query.isNullOrEmpty()) {
-                    val getResponseDeferred = MovieApi.retrofitService.searchMoviesAsync(query)
+                    val getResponseDeferred = retrofitService.searchMoviesAsync(query)
                     val movieList = getResponseDeferred.await().movieList
 
                     database.insertMovies(*movieList.toEntity().toTypedArray())

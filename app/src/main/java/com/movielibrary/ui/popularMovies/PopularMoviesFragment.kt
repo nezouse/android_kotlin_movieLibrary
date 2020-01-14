@@ -1,4 +1,4 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.popularMovies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +15,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
 import com.movielibrary.databinding.MainFragmentBinding
+import com.movielibrary.ui.recyclerAdapters.FragmentAdapter
+import com.movielibrary.ui.recyclerAdapters.MovieListener
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class PopularMoviesFragment : Fragment() {
@@ -32,15 +34,19 @@ class PopularMoviesFragment : Fragment() {
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
 
-        val adapter = FragmentAdapter(MovieListener { movie ->
-            mainFragmentViewModel.onMovieClicked(movie)
-        })
+        val adapter =
+            FragmentAdapter(
+                MovieListener { movie ->
+                    mainFragmentViewModel.onMovieClicked(movie)
+                })
 
         mainFragmentViewModel.navigateToDetailView.observe(this, Observer { movie ->
             movie?.let {
                 this.findNavController()
                     .navigate(
-                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(movie)
+                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(
+                            movie
+                        )
                     )
                 mainFragmentViewModel.onMovieNavigated()
             }

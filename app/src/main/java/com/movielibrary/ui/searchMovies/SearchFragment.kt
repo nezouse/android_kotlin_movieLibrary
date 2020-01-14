@@ -1,4 +1,4 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.searchMovies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
 import com.movielibrary.databinding.SearchFragmentBinding
+import com.movielibrary.ui.recyclerAdapters.FragmentAdapter
+import com.movielibrary.ui.recyclerAdapters.MovieListener
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
@@ -52,9 +54,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun connectAdapter(binding: SearchFragmentBinding) {
-        adapter = FragmentAdapter(MovieListener { movie ->
-            searchMoviesViewModel.onMovieClicked(movie)
-        })
+        adapter = FragmentAdapter(
+            MovieListener { movie ->
+                searchMoviesViewModel.onMovieClicked(movie)
+            })
         searchMoviesViewModel.adapter = adapter
         adapter.submitList(searchMoviesViewModel.searchMoviesList)
         binding.movieList.adapter = adapter

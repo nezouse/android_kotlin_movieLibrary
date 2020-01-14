@@ -1,4 +1,4 @@
-package com.movielibrary.ui.movieDetails
+package com.movielibrary.ui.recyclerAdapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,10 +8,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.movielibrary.database.CommentEntity
 import com.movielibrary.databinding.MovieCommentFragmentBinding
 
-class CommentAdapter : ListAdapter<CommentEntity, CommentViewHolder>(CommentDiffCallback()) {
+class CommentAdapter : ListAdapter<CommentEntity, CommentViewHolder>(
+    CommentDiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-        return CommentViewHolder.from(parent)
+        return CommentViewHolder.from(
+            parent
+        )
     }
 
     override fun onBindViewHolder(holder: CommentViewHolder, position: Int) {
