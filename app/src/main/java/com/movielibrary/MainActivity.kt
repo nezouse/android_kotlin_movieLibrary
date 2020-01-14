@@ -13,6 +13,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.movielibrary.database.Repository
 import kotlinx.android.synthetic.main.main_activity.*
+import org.koin.core.context.startKoin
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 

@@ -1,10 +1,9 @@
 package com.movielibrary.ui.main
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.database.toPopularMovie
@@ -15,10 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class PopularMoviesViewModel(
-    val database: MoviesDao,
-    application: Application
-) : AndroidViewModel(application) {
+class PopularMoviesViewModel(val database: MoviesDao) : ViewModel() {
     var popularMoviesList: LiveData<List<MovieEntity>> = database.getPopularMovies()
     private val _navigateToDetailView = MutableLiveData<MovieEntity>()
     val navigateToDetailView: LiveData<MovieEntity>

@@ -1,10 +1,9 @@
 package com.movielibrary.ui.main
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.network.MovieApi
@@ -15,10 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 
-class SearchMoviesViewModel(
-    val database: MoviesDao,
-    application: Application
-) : AndroidViewModel(application) {
+class SearchMoviesViewModel(val database: MoviesDao) : ViewModel() {
     var searchMoviesList: LinkedList<MovieEntity> = LinkedList()
     lateinit var adapter: FragmentAdapter
     private val _navigateToDetailView = MutableLiveData<MovieEntity>()

@@ -11,17 +11,16 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
-import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.databinding.SearchFragmentBinding
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
 
-    lateinit var searchMoviesViewModel: SearchMoviesViewModel
+    private val searchMoviesViewModel: SearchMoviesViewModel by viewModel()
     private lateinit var adapter: FragmentAdapter
 
     override fun onCreateView(
@@ -29,15 +28,9 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: SearchFragmentBinding =
-            DataBindingUtil.inflate(inflater, R.layout.search_fragment, container, false)
-
-        val application = requireNotNull(this.activity).application
-        val dataSource = MoviesDatabase.getInstance(application).moviesDao
-        val viewModelFactory = SearchFragmentViewModelFactory(dataSource, application)
-
-        searchMoviesViewModel =
-            ViewModelProviders.of(this, viewModelFactory).get(SearchMoviesViewModel::class.java)
+        val binding: SearchFragmentBinding = DataBindingUtil.inflate(
+            inflater, R.layout.search_fragment, container, false
+        )
 
         binding.searchFragmentViewModel = searchMoviesViewModel
         binding.lifecycleOwner = this
@@ -58,7 +51,7 @@ class SearchFragment : Fragment() {
         return binding.root
     }
 
-    fun connectAdapter(binding: SearchFragmentBinding) {
+    private fun connectAdapter(binding: SearchFragmentBinding) {
         adapter = FragmentAdapter(MovieListener { movie ->
             searchMoviesViewModel.onMovieClicked(movie)
         })
