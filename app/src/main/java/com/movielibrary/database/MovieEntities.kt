@@ -41,6 +41,22 @@ data class PopularMovieEntity(
     val id: Int = 0
 )
 
+@Entity(
+    tableName = "recently_viewed_table",
+    foreignKeys = [ForeignKey(
+        entity = MovieEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["movie_id"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class RecentlyViewedMovie(
+    val recentRank: Int = 0,
+    @PrimaryKey
+    @ColumnInfo(name = "movie_id")
+    val movieId: Int = 0
+)
+
 fun List<MovieEntity>.toPopularMovie(): List<PopularMovieEntity> {
     return map {
         PopularMovieEntity(
