@@ -20,6 +20,7 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     var movie = MutableLiveData<MovieEntity>()
     var liked = MutableLiveData<Boolean>(false)
     var rating = MutableLiveData<Float?>(null)
+    lateinit var user: UserEntity
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
@@ -27,11 +28,13 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     var commentsList: LiveData<List<CommentEntity>> = repository.getMovieComments(movieId)
     val commentsListener = repository.subscribeToComments(movieId)
 
-    fun initIcons() {
+    init {
         coroutineScope.launch {
-            val user = getUser()
-            checkIfLiked(user)
-            checkIfRated(user)
+            user = getUser()
+            if(user.email.isNotEmpty()){
+                checkIfLiked()
+                checkIfRated()
+            }
         }
     }
 
@@ -46,16 +49,17 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     fun addToFavourite() {
         coroutineScope.launch {
             try {
-                val user = getUser()
-                val favouriteMovies = LinkedList(user.favouriteMovies)
-                if (!liked.value!!) {
-                    favouriteMovies.add(movie.value?.id)
-                    repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    liked.postValue(true)
-                } else {
-                    favouriteMovies.remove(movie.value?.id)
-                    repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    liked.postValue(false)
+                if (user.email.isNotEmpty()) {
+                    val favouriteMovies = LinkedList(user.favouriteMovies)
+                    if (!liked.value!!) {
+                        favouriteMovies.add(movie.value?.id)
+                        repository.updateFavouriteMovies(user.id, favouriteMovies)
+                        liked.postValue(true)
+                    } else {
+                        favouriteMovies.remove(movie.value?.id)
+                        repository.updateFavouriteMovies(user.id, favouriteMovies)
+                        liked.postValue(false)
+                    }
                 }
             } catch (e: Exception) {
                 Log.i("MOVIES/FAVOURITE", e.toString())
@@ -63,16 +67,17 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         }
     }
 
-    fun rateMovie(rating: Float) {
+    fun rateMovie(userRating: Float) {
         coroutineScope.launch {
             try {
-                val user = getUser()
-                val ratedMovies = user.ratedMovies
-                val correctRating = rating * 2
-                ratedMovies[movie.value?.id!!.toString()] = correctRating
+                if (user.email.isNotEmpty()) {
+                    val ratedMovies = user.ratedMovies
+                    val correctRating = userRating * 2
+                    ratedMovies[movie.value?.id!!.toString()] = correctRating
 
-                repository.updateRatedMovies(user.id, ratedMovies)
-                this@MovieDetailsViewModel.rating.postValue(correctRating)
+                    repository.updateRatedMovies(user.id, ratedMovies)
+                    rating.postValue(correctRating)
+                }
             } catch (e: Exception) {
                 Log.i("MOVIES/RATING", e.toString())
             }
@@ -82,26 +87,27 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     fun removeRating() {
         coroutineScope.launch {
             try {
-                val user = getUser()
-                val ratedMovies = user.ratedMovies
-                ratedMovies.remove(movie.value?.id.toString())
+                if (user.email.isNotEmpty()) {
+                    val ratedMovies = user.ratedMovies
+                    ratedMovies.remove(movie.value?.id.toString())
 
-                repository.updateRatedMovies(user.id, ratedMovies)
-                rating.postValue(null)
+                    repository.updateRatedMovies(user.id, ratedMovies)
+                    rating.postValue(null)
+                }
             } catch (e: Exception) {
                 Log.i("MOVIES/REMOVE_RATING", e.toString())
             }
         }
     }
 
-    fun checkIfLiked(user: UserEntity) {
+    private fun checkIfLiked() {
         val favouriteMovies = LinkedList(user.favouriteMovies)
         if (favouriteMovies.contains(movie.value?.id)) {
             liked.postValue(true)
         }
     }
 
-    fun checkIfRated(user: UserEntity) {
+    private fun checkIfRated() {
         val ratedMovies = user.ratedMovies
         if (ratedMovies.containsKey(movie.value?.id.toString())) {
             val rating = user.ratedMovies[movie.value?.id.toString()]
@@ -109,8 +115,10 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         }
     }
 
-    suspend fun getUser(): UserEntity {
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-        return repository.getUser(userId)[0]
+    private suspend fun getUser(): UserEntity {
+        FirebaseAuth.getInstance().currentUser?.let {
+            return repository.getUser(it.uid)[0]
+        }
+        return UserEntity()
     }
 }

@@ -1,16 +1,15 @@
 package com.movielibrary.ui.movieDetails
 
+import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupWindow
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.snackbar.Snackbar
 import com.movielibrary.R
 import com.movielibrary.database.CommentEntity
 import com.movielibrary.databinding.MovieDetailsFragmentBinding
@@ -42,7 +41,6 @@ class MovieDetailsFragment : Fragment() {
         binding.commentList.adapter = adapter
         binding.movieDetailsViewModel!!.movie.value = args.movie
 
-        movieDetailsViewModel.initIcons()
         binding.movieDetailsViewModel!!.commentsList.observe(this, Observer {
             it?.let {
                 adapter.submitList(it)
@@ -58,8 +56,23 @@ class MovieDetailsFragment : Fragment() {
             binding.commentBody.setText("")
         }
 
+        popupView = LayoutInflater.from(activity).inflate(R.layout.rating_popup_view, null)
+        val ratingAlert = AlertDialog.Builder(context).setView(popupView).create()
+
         binding.userRatingIcon.setOnClickListener {
-            createPopup()
+            if(movieDetailsViewModel.user.email.isNotEmpty()) {
+                ratingAlert.show()
+
+                popupView.rate_button.setOnClickListener {
+                    val rating = popupView.rating_bar.rating
+                    movieDetailsViewModel.rateMovie(rating)
+                    ratingAlert?.dismiss()
+                }
+                popupView.remove_button.setOnClickListener {
+                    movieDetailsViewModel.removeRating()
+                    ratingAlert?.dismiss()
+                }
+            }
         }
 
         binding.userFavouriteIcon.setOnClickListener {
@@ -72,10 +85,8 @@ class MovieDetailsFragment : Fragment() {
             liked?.let {
                 if (it) {
                     binding.userFavouriteIcon.setImageResource(R.drawable.favourite_red)
-                    Log.i("OBSERVER", it.toString())
                 } else {
                     binding.userFavouriteIcon.setImageResource(R.drawable.favorite_border)
-                    Log.i("OBSERVER", it.toString())
                 }
             }
         })
@@ -102,29 +113,6 @@ class MovieDetailsFragment : Fragment() {
             val args = MovieDetailsFragmentArgs.fromBundle(it)
             binding.movieDetailsViewModel?.movie?.value = args.movie
             movieDetailsViewModel.addRecentlyViewedMovie(args.movie.id)
-        }
-    }
-
-    private fun createPopup() {
-        val popupWindow = PopupWindow(
-            popupView,
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        popupWindow.elevation = 5.0f
-        popupWindow.isOutsideTouchable = true
-        popupWindow.isFocusable = true
-        popupWindow.showAtLocation(binding.detailsLayout, Gravity.CENTER, 0, 0)
-
-        popupView.rate_button.setOnClickListener {
-            val rating = popupView.rating_bar.rating
-            movieDetailsViewModel.rateMovie(rating)
-            popupWindow.dismiss()
-        }
-        popupView.remove_button.setOnClickListener {
-            movieDetailsViewModel.removeRating()
-            popupWindow.dismiss()
         }
     }
 
