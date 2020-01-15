@@ -2,7 +2,6 @@ package com.movielibrary.ui.movieDetails
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,8 +21,8 @@ import java.util.LinkedList
 class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     ViewModel() {
     var movie = MutableLiveData<MovieEntity>()
-    var liked = false
-    var rated = false
+    var liked2 = MutableLiveData<Boolean>(false)
+    var rated2 = MutableLiveData<Boolean>(false)
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
@@ -34,8 +33,8 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     fun initIcons(ratingView: ImageView, favouriteView: ImageView, ratingTextView: TextView) {
         coroutineScope.launch {
             val user = getUser()
-            checkIfLiked(user, favouriteView)
-            checkIfRated(user, ratingView, ratingTextView)
+            checkIfLiked(user)
+            checkIfRated(user, ratingTextView)
         }
     }
 
@@ -52,28 +51,27 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         imageView.setImageResource(R.drawable.star_blue)
     }
 
-    fun addToFavourite(imageView: ImageView) {
+    fun addToFavourite() {
         coroutineScope.launch {
             try {
                 val user = getUser()
                 val favouriteMovies = LinkedList(user.favouriteMovies)
-                if (!liked) {
+                if (!liked2.value!!) {
                     favouriteMovies.add(movie.value?.id)
                     repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    imageView.setImageResource(R.drawable.favourite_red)
+                    liked2.postValue(true)
                 } else {
                     favouriteMovies.remove(movie.value?.id)
                     repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    imageView.setImageResource(R.drawable.favorite_border)
+                    liked2.postValue(false)
                 }
-                liked = !liked
             } catch (e: Exception) {
                 Log.i("MOVIES/FAVOURITE", e.toString())
             }
         }
     }
 
-    fun rateMovie(imageView: ImageView, rating: Float) {
+    fun rateMovie(rating: Float) {
         coroutineScope.launch {
             try {
                 val user = getUser()
@@ -83,13 +81,14 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
                 repository.updateRatedMovies(user.id, ratedMovies)
                 rated = true
                 imageView.setImageResource(R.drawable.star_blue)
+                rated2.postValue( true)
             } catch (e: Exception) {
                 Log.i("MOVIES/RATING", e.toString())
             }
         }
     }
 
-    fun removeRating(imageView: ImageView, textView: TextView) {
+    fun removeRating(textView: TextView) {
         coroutineScope.launch {
             try {
                 val user = getUser()
@@ -100,28 +99,25 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
                 coroutineScope.launch(Dispatchers.Main.immediate) {
                     textView.setText(R.string.rate_text)
                 }
-                rated = false
-                imageView.setImageResource(R.drawable.star_border)
+                rated2.postValue( false)
             } catch (e: Exception) {
                 Log.i("MOVIES/REMOVE_RATING", e.toString())
             }
         }
     }
 
-    fun checkIfLiked(user: UserEntity, imageView: ImageView) {
+    fun checkIfLiked(user: UserEntity) {
         val favouriteMovies = LinkedList(user.favouriteMovies)
         if (favouriteMovies.contains(movie.value?.id)) {
-            imageView.setImageResource(R.drawable.favourite_red)
-            liked = true
+            liked2.postValue(true)
         }
     }
 
     @SuppressLint("SetTextI18n")
-    fun checkIfRated(user: UserEntity, imageView: ImageView, textView: TextView) {
+    fun checkIfRated(user: UserEntity, textView: TextView) {
         val ratedMovies = user.ratedMovies
         if (ratedMovies.containsKey(movie.value?.id.toString())) {
-            imageView.setImageResource(R.drawable.star_blue)
-            rated = true
+            rated2.postValue( true)
             val rating = user.ratedMovies[movie.value?.id.toString()]
             coroutineScope.launch(Dispatchers.Main.immediate) {
                 textView.text = "$rating/10"

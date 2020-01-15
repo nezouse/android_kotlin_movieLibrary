@@ -12,10 +12,15 @@ import android.widget.PopupWindow
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.movielibrary.R
 import com.movielibrary.database.CommentEntity
 import com.movielibrary.databinding.MovieDetailsFragmentBinding
+import com.movielibrary.ui.main.PopularMoviesFragmentDirections
 import kotlinx.android.synthetic.main.rating_popup_view.view.*
 import com.movielibrary.ui.recyclerAdapters.CommentAdapter
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -65,6 +70,28 @@ class MovieDetailsFragment : Fragment() {
 
         movieDetailsViewModel.addRecentlyViewedMovie(args.movie.id)
 
+        //obserers
+        viewModel.liked2.observe(this, Observer { liked ->
+            liked?.let {
+                if (it) {
+                    binding.userFavouriteIcon.setImageResource(R.drawable.favourite_red)
+                    Log.i("OBSERVER", it.toString())
+                } else {
+                    binding.userFavouriteIcon.setImageResource(R.drawable.favorite_border)
+                    Log.i("OBSERVER", it.toString())
+                }
+            }
+        })
+
+        viewModel.rated2.observe(this, Observer { rated ->
+            rated?.let {
+                if (it) {
+                    binding.userRatingIcon.setImageResource(R.drawable.star_blue)
+                } else {
+                    binding.userRatingIcon.setImageResource(R.drawable.star_border)
+                }
+            }
+        })
         return binding.root
     }
 
@@ -77,16 +104,16 @@ class MovieDetailsFragment : Fragment() {
         }
 
         binding.userRatingIcon.setOnClickListener {
-            createPopup(it as ImageView)
+            createPopup()
         }
 
         binding.userFavouriteIcon.setOnClickListener {
-            movieDetailsViewModel.addToFavourite(it as ImageView)
+            movieDetailsViewModel.addToFavourite()
         }
     }
 
     @SuppressLint("SetTextI18n")
-    private fun createPopup(imageView: ImageView) {
+    private fun createPopup() {
         val popupView = LayoutInflater.from(activity).inflate(R.layout.rating_popup_view, null)
         val popupWindow = PopupWindow(
             popupView,
@@ -101,6 +128,13 @@ class MovieDetailsFragment : Fragment() {
         if (!movieDetailsViewModel.rated) {
             popupView.remove_button.visibility = View.INVISIBLE
         }
+        MaterialAlertDialogBuilder(
+            context,
+            R.style.ThemeOverlay_MaterialComponents_MaterialAlertDialog_Centered
+        )
+            .setTitle("Title")
+            .setMessage("Message")
+            .show()
 
         popupView.rate_button.setOnClickListener {
             val rating = popupView.rating_bar.rating
