@@ -33,6 +33,6 @@ interface MoviesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertComment(vararg comment: CommentEntity)
 
-    @Query("SELECT * FROM comments_table WHERE movieId = :movieId")
+    @Query("SELECT * FROM comments_table WHERE movieId = :movieId ORDER BY date desc")
     fun getCommentsForMovie(movieId: Int): LiveData<List<CommentEntity>>
 }
