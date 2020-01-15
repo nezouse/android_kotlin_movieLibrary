@@ -11,7 +11,7 @@
 
         <variable
             name="clickListener"
-            type="com.movielibrary.ui.main.MovieListener" />
+            type="com.movielibrary.ui.recyclerAdapters.MovieListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

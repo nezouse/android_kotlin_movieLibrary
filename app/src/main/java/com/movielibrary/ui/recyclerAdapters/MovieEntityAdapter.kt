@@ -1,4 +1,4 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.recyclerAdapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,9 +9,13 @@ import com.movielibrary.database.MovieEntity
 import com.movielibrary.databinding.MovieOverviewFragmentBinding
 
 class FragmentAdapter(private val clickListener: MovieListener) :
-    ListAdapter<MovieEntity, MovieViewHolder>(MovieDiffCallback()) {
+    ListAdapter<MovieEntity, MovieViewHolder>(
+        MovieDiffCallback()
+    ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        return MovieViewHolder.from(parent)
+        return MovieViewHolder.from(
+            parent
+        )
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {

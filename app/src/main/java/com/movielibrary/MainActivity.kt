@@ -13,6 +13,8 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.movielibrary.database.Repository
 import kotlinx.android.synthetic.main.main_activity.*
+import org.koin.android.ext.android.inject
+import org.koin.core.context.startKoin
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -21,6 +23,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         AuthUI.IdpConfig.EmailBuilder().build(),
         AuthUI.IdpConfig.GoogleBuilder().build()
     )
+    private val repository: Repository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             if (resultCode == Activity.RESULT_OK) {
                 navigation.menu.findItem(R.id.login).title = "Logout"
                 if (response!!.isNewUser) {
-                    Repository.insertUser()
+                    repository.insertUser()
                     Toast.makeText(this, "Thanks for registration", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Successfully logged in", Toast.LENGTH_SHORT).show()

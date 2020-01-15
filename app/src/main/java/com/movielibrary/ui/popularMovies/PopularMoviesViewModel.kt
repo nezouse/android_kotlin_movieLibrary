@@ -1,14 +1,13 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.popularMovies
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.MoviesDao
 import com.movielibrary.database.toPopularMovie
-import com.movielibrary.network.MovieApi
+import com.movielibrary.network.MovieApiService
 import com.movielibrary.network.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,9 +15,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class PopularMoviesViewModel(
-    val database: MoviesDao,
-    application: Application
-) : AndroidViewModel(application) {
+    private val database: MoviesDao,
+    private val retrofitService: MovieApiService
+) : ViewModel() {
     var popularMoviesList: LiveData<List<MovieEntity>> = database.getPopularMovies()
     private val _navigateToDetailView = MutableLiveData<MovieEntity>()
     val navigateToDetailView: LiveData<MovieEntity>
@@ -42,7 +41,7 @@ class PopularMoviesViewModel(
     private fun getPopularMovies() {
         coroutineScope.launch {
             try {
-                val getResponseDeferred = MovieApi.retrofitService.getPopularMoviesAsync()
+                val getResponseDeferred = retrofitService.getPopularMoviesAsync()
                 val movieList = getResponseDeferred.await().movieList
 
                 val movieEntityList = movieList.toEntity()

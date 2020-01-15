@@ -1,31 +1,35 @@
 package com.movielibrary.ui.movieDetails
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.movielibrary.R
-import com.movielibrary.database.*
+import com.movielibrary.database.CommentEntity
+import com.movielibrary.database.MovieEntity
+import com.movielibrary.database.Repository
+import com.movielibrary.database.UserEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.LinkedList
 
-class MovieDetailsViewModel(
-    val database: MoviesDao,
-    application: Application
-) : AndroidViewModel(application) {
+class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
+    ViewModel() {
     var movie = MutableLiveData<MovieEntity>()
     var liked = false
     var rated = false
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
+
+    var commentsList: LiveData<List<CommentEntity>> = repository.getMovieComments(movieId)
+    val commentsListener = repository.subscribeToComments(movieId)
 
     fun initIcons(ratingView: ImageView, favouriteView: ImageView, ratingTextView: TextView) {
         coroutineScope.launch {
@@ -36,19 +40,16 @@ class MovieDetailsViewModel(
     }
 
     fun addRecentlyViewedMovie(id: Int) {
-        coroutineScope.launch {
-            try {
-                val recentRank = database.getMostRecentViewedMovieRank()
-                database.insertRecentMovie(
-                    RecentlyViewedMovie(
-                        movieId = id,
-                        recentRank = recentRank + 1
-                    )
-                )
-            } catch (e: Exception) {
-                Log.i("MOVIES/RECENT", e.toString())
-            }
-        }
+        repository.addRecentlyViewedMovie(id)
+    }
+
+    fun insertComment(comment: CommentEntity) {
+        repository.insertUserComment(comment)
+    }
+
+    fun rateMovie(imageView: ImageView) {
+        //TODO add movie rating
+        imageView.setImageResource(R.drawable.star_blue)
     }
 
     fun addToFavourite(imageView: ImageView) {
@@ -58,11 +59,11 @@ class MovieDetailsViewModel(
                 val favouriteMovies = LinkedList(user.favouriteMovies)
                 if (!liked) {
                     favouriteMovies.add(movie.value?.id)
-                    Repository.updateFavouriteMovies(user.id, favouriteMovies)
+                    repository.updateFavouriteMovies(user.id, favouriteMovies)
                     imageView.setImageResource(R.drawable.favourite_red)
                 } else {
                     favouriteMovies.remove(movie.value?.id)
-                    Repository.updateFavouriteMovies(user.id, favouriteMovies)
+                    repository.updateFavouriteMovies(user.id, favouriteMovies)
                     imageView.setImageResource(R.drawable.favorite_border)
                 }
                 liked = !liked
@@ -70,7 +71,6 @@ class MovieDetailsViewModel(
                 Log.i("MOVIES/FAVOURITE", e.toString())
             }
         }
-
     }
 
     fun rateMovie(imageView: ImageView, rating: Float) {
@@ -80,7 +80,7 @@ class MovieDetailsViewModel(
                 val ratedMovies = user.ratedMovies
                 ratedMovies[movie.value?.id!!.toString()] = rating * 2
 
-                Repository.updateRatedMovies(user.id, ratedMovies)
+                repository.updateRatedMovies(user.id, ratedMovies)
                 rated = true
                 imageView.setImageResource(R.drawable.star_blue)
             } catch (e: Exception) {
@@ -96,7 +96,7 @@ class MovieDetailsViewModel(
                 val ratedMovies = user.ratedMovies
                 ratedMovies.remove(movie.value?.id.toString())
 
-                Repository.updateRatedMovies(user.id, ratedMovies)
+                repository.updateRatedMovies(user.id, ratedMovies)
                 coroutineScope.launch(Dispatchers.Main.immediate) {
                     textView.setText(R.string.rate_text)
                 }
@@ -131,6 +131,6 @@ class MovieDetailsViewModel(
 
     suspend fun getUser(): UserEntity {
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
-        return Repository.getUser(userId)[0]
+        return repository.getUser(userId)[0]
     }
 }

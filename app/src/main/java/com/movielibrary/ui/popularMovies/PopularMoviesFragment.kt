@@ -1,4 +1,4 @@
-package com.movielibrary.ui.main
+package com.movielibrary.ui.popularMovies
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,15 +10,19 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.movielibrary.R
-import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.databinding.MainFragmentBinding
+import com.movielibrary.ui.recyclerAdapters.FragmentAdapter
+import com.movielibrary.ui.recyclerAdapters.MovieListener
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class PopularMoviesFragment : Fragment() {
+
+    private val mainFragmentViewModel: PopularMoviesViewModel by viewModel()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,27 +31,22 @@ class PopularMoviesFragment : Fragment() {
         val binding: MainFragmentBinding =
             DataBindingUtil.inflate(inflater, R.layout.main_fragment, container, false)
 
-        val application = requireNotNull(this.activity).application
-
-        val dataSource = MoviesDatabase.getInstance(application).moviesDao
-
-        val viewModelFactory = MainFragmentViewModelFactory(dataSource, application)
-
-        val mainFragmentViewModel =
-            ViewModelProviders.of(this, viewModelFactory).get(PopularMoviesViewModel::class.java)
-
         binding.mainFragmentViewModel = mainFragmentViewModel
         binding.lifecycleOwner = this
 
-        val adapter = FragmentAdapter(MovieListener { movie ->
-            mainFragmentViewModel.onMovieClicked(movie)
-        })
+        val adapter =
+            FragmentAdapter(
+                MovieListener { movie ->
+                    mainFragmentViewModel.onMovieClicked(movie)
+                })
 
         mainFragmentViewModel.navigateToDetailView.observe(this, Observer { movie ->
             movie?.let {
                 this.findNavController()
                     .navigate(
-                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(movie)
+                        PopularMoviesFragmentDirections.actionMainFragmentToMovieDetails(
+                            movie
+                        )
                     )
                 mainFragmentViewModel.onMovieNavigated()
             }
