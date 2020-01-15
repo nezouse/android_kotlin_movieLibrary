@@ -6,4 +6,5 @@
     <string name="rate_text">RATE THIS</string>
     <string name="rate_button_text">Rate</string>
     <string name="remove_button_text">Remove</string>
+    <string name="user_rating_text">%1$s/10</string>
 </resources>

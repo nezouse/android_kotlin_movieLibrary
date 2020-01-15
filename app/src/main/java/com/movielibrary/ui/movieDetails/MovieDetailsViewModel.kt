@@ -1,13 +1,10 @@
 package com.movielibrary.ui.movieDetails
 
-import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.movielibrary.R
 import com.movielibrary.database.CommentEntity
 import com.movielibrary.database.MovieEntity
 import com.movielibrary.database.Repository
@@ -21,8 +18,8 @@ import java.util.LinkedList
 class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     ViewModel() {
     var movie = MutableLiveData<MovieEntity>()
-    var liked2 = MutableLiveData<Boolean>(false)
-    var rated2 = MutableLiveData<Boolean>(false)
+    var liked = MutableLiveData<Boolean>(false)
+    var rating = MutableLiveData<Float?>(null)
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.IO)
@@ -30,11 +27,11 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     var commentsList: LiveData<List<CommentEntity>> = repository.getMovieComments(movieId)
     val commentsListener = repository.subscribeToComments(movieId)
 
-    fun initIcons(ratingView: ImageView, favouriteView: ImageView, ratingTextView: TextView) {
+    fun initIcons() {
         coroutineScope.launch {
             val user = getUser()
             checkIfLiked(user)
-            checkIfRated(user, ratingTextView)
+            checkIfRated(user)
         }
     }
 
@@ -46,24 +43,19 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         repository.insertUserComment(comment)
     }
 
-    fun rateMovie(imageView: ImageView) {
-        //TODO add movie rating
-        imageView.setImageResource(R.drawable.star_blue)
-    }
-
     fun addToFavourite() {
         coroutineScope.launch {
             try {
                 val user = getUser()
                 val favouriteMovies = LinkedList(user.favouriteMovies)
-                if (!liked2.value!!) {
+                if (!liked.value!!) {
                     favouriteMovies.add(movie.value?.id)
                     repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    liked2.postValue(true)
+                    liked.postValue(true)
                 } else {
                     favouriteMovies.remove(movie.value?.id)
                     repository.updateFavouriteMovies(user.id, favouriteMovies)
-                    liked2.postValue(false)
+                    liked.postValue(false)
                 }
             } catch (e: Exception) {
                 Log.i("MOVIES/FAVOURITE", e.toString())
@@ -76,19 +68,18 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
             try {
                 val user = getUser()
                 val ratedMovies = user.ratedMovies
-                ratedMovies[movie.value?.id!!.toString()] = rating * 2
+                val correctRating = rating * 2
+                ratedMovies[movie.value?.id!!.toString()] = correctRating
 
                 repository.updateRatedMovies(user.id, ratedMovies)
-                rated = true
-                imageView.setImageResource(R.drawable.star_blue)
-                rated2.postValue( true)
+                this@MovieDetailsViewModel.rating.postValue(correctRating)
             } catch (e: Exception) {
                 Log.i("MOVIES/RATING", e.toString())
             }
         }
     }
 
-    fun removeRating(textView: TextView) {
+    fun removeRating() {
         coroutineScope.launch {
             try {
                 val user = getUser()
@@ -96,10 +87,7 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
                 ratedMovies.remove(movie.value?.id.toString())
 
                 repository.updateRatedMovies(user.id, ratedMovies)
-                coroutineScope.launch(Dispatchers.Main.immediate) {
-                    textView.setText(R.string.rate_text)
-                }
-                rated2.postValue( false)
+                rating.postValue(null)
             } catch (e: Exception) {
                 Log.i("MOVIES/REMOVE_RATING", e.toString())
             }
@@ -109,19 +97,15 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
     fun checkIfLiked(user: UserEntity) {
         val favouriteMovies = LinkedList(user.favouriteMovies)
         if (favouriteMovies.contains(movie.value?.id)) {
-            liked2.postValue(true)
+            liked.postValue(true)
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    fun checkIfRated(user: UserEntity, textView: TextView) {
+    fun checkIfRated(user: UserEntity) {
         val ratedMovies = user.ratedMovies
         if (ratedMovies.containsKey(movie.value?.id.toString())) {
-            rated2.postValue( true)
             val rating = user.ratedMovies[movie.value?.id.toString()]
-            coroutineScope.launch(Dispatchers.Main.immediate) {
-                textView.text = "$rating/10"
-            }
+            this.rating.postValue(rating)
         }
     }
 
