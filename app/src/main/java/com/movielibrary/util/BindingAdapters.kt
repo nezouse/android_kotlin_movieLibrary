@@ -1,6 +1,7 @@
 package com.movielibrary.util
 
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -15,4 +16,10 @@ fun bindImage(imgView: ImageView, imgUrl: String?) {
             .fitCenter()
             .into(imgView)
     }
+}
+
+@BindingAdapter("android:text")
+fun bindRating(textView: TextView, rating: Double?) {
+    val stringRating = rating.toString() + "/10"
+    textView.text = stringRating
 }

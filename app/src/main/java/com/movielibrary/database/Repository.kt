@@ -49,4 +49,26 @@ object Repository {
             emptyList()
         }
     }
+
+    suspend fun getUser(userId: String): List<UserEntity> {
+        return try {
+            val favMovies: List<UserEntity> = dao.getFavouriteMovies(userId)
+            favMovies
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting documents - favourite movies", e)
+            emptyList()
+        }
+    }
+
+    suspend fun updateFavouriteMovies(userId: String, favouriteMovies:List<Int>) {
+        coroutineScope.launch {
+            dao.updateFavouriteMovies(userId, favouriteMovies)
+        }
+    }
+
+    fun updateRatedMovies(userId: String, ratedMovies:HashMap<String, Float>) {
+        coroutineScope.launch {
+            dao.updateRatedMovies(userId, ratedMovies)
+        }
+    }
 }

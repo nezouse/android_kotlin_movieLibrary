@@ -22,4 +22,17 @@ object FirebaseDao {
         val snapshots = db.collection("comments").whereEqualTo("movieId", movieId).get().await()
         return snapshots.toObjects()
     }
+
+    suspend fun getFavouriteMovies(userId: String): List<UserEntity> {
+        val snapshots = db.collection("users").whereEqualTo("id", userId).get().await()
+        return snapshots.toObjects()
+    }
+
+    fun updateFavouriteMovies(userId: String, favouriteMovies: List<Int>) {
+        db.collection("users").document(userId).update("favouriteMovies", favouriteMovies)
+    }
+
+    fun updateRatedMovies(userId: String, ratedMovies: HashMap<String, Float>){
+        db.collection("users").document(userId).update("ratedMovies", ratedMovies)
+    }
 }
