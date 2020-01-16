@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.ktx.toObjects
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,20 +43,53 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
         }
     }
 
+    fun deleteUserComment(commentId: String) {
+        coroutineScope.launch {
+            try {
+                firebaseDao.deleteComment(commentId)
+                Log.i(TAG, "Comment deleted with ID: $commentId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting comment", e)
+            }
+        }
+    }
+
+    fun editUserComment(comment: CommentEntity) {
+        coroutineScope.launch {
+            try {
+                firebaseDao.editComment(comment)
+                Log.i(TAG, "Comment edited with ID: ${comment.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error editing comment", e)
+            }
+        }
+    }
+
     fun getMovieComments(id: Int): LiveData<List<CommentEntity>> {
         return roomDao.getCommentsForMovie(id)
     }
 
-    fun subscribeToComments(id: Int): ListenerRegistration {
+    fun subscribeToComments(movieId: Int): ListenerRegistration {
         Log.w(TAG, "Listener attached")
-        return firebaseDao.getCommentsQuery(id).addSnapshotListener { values, e ->
+        return firebaseDao.getCommentsQuery(movieId).addSnapshotListener { values, e ->
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e)
                 return@addSnapshotListener
             }
+
             coroutineScope.launch {
-                values?.forEach {
-                    roomDao.insertComment(it.toObject())
+                values?.let { snapshotsFromFirestore ->
+                    Log.w(TAG, "New snapshots from firestore")
+                    val commentsInCache = roomDao.getCommentsForMovieSync(movieId)
+                    val commentsFromFirestore = snapshotsFromFirestore.toObjects<CommentEntity>()
+                    val union = commentsInCache + commentsFromFirestore
+                    val itemsOnlyInCache = union.filter {
+                        union.indexOf(it) == union.lastIndexOf(it) && commentsInCache.contains(it)
+                    }
+
+                    itemsOnlyInCache.forEach { roomDao.deleteComment(it) }
+                    // Insert all from firestore because comments can be edited
+                    roomDao.insertComment(*commentsFromFirestore.toTypedArray())
                 }
             }
         }
@@ -93,13 +126,13 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
         }
     }
 
-    suspend fun updateFavouriteMovies(userId: String, favouriteMovies:List<Int>) {
+    fun updateFavouriteMovies(userId: String, favouriteMovies: List<Int>) {
         coroutineScope.launch {
             firebaseDao.updateFavouriteMovies(userId, favouriteMovies)
         }
     }
 
-    fun updateRatedMovies(userId: String, ratedMovies:HashMap<String, Float>) {
+    fun updateRatedMovies(userId: String, ratedMovies: HashMap<String, Float>) {
         coroutineScope.launch {
             firebaseDao.updateRatedMovies(userId, ratedMovies)
         }

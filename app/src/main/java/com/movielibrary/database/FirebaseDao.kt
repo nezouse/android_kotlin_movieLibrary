@@ -21,9 +21,17 @@ class FirebaseDao {
         return db.collection("comments").whereEqualTo("movieId", movieId)
     }
 
-    suspend fun getMovieComments(movieId: Int): List<CommentEntity> {
-        val snapshots = db.collection("comments").whereEqualTo("movieId", movieId).get().await()
-        return snapshots.toObjects()
+    suspend fun deleteComment(commentId: String) {
+        db.collection("comments").document(commentId).delete().await()
+    }
+
+    suspend fun editComment(comment: CommentEntity) {
+        db.collection("comments")
+            .document(comment.id)
+            .update(
+                "title", comment.title,
+                "body", comment.body
+            ).await()
     }
 
     suspend fun getFavouriteMovies(userId: String): List<UserEntity> {
@@ -31,11 +39,11 @@ class FirebaseDao {
         return snapshots.toObjects()
     }
 
-    fun updateFavouriteMovies(userId: String, favouriteMovies: List<Int>) {
-        db.collection("users").document(userId).update("favouriteMovies", favouriteMovies)
+    suspend fun updateFavouriteMovies(userId: String, favouriteMovies: List<Int>) {
+        db.collection("users").document(userId).update("favouriteMovies", favouriteMovies).await()
     }
 
-    fun updateRatedMovies(userId: String, ratedMovies: HashMap<String, Float>){
-        db.collection("users").document(userId).update("ratedMovies", ratedMovies)
+    suspend fun updateRatedMovies(userId: String, ratedMovies: HashMap<String, Float>) {
+        db.collection("users").document(userId).update("ratedMovies", ratedMovies).await()
     }
 }

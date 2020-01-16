@@ -2,8 +2,6 @@ package com.movielibrary.ui.movieDetails
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +11,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.movielibrary.R
 import com.movielibrary.database.CommentEntity
+import com.movielibrary.databinding.AddCommentFragmentBinding
 import com.movielibrary.databinding.MovieDetailsFragmentBinding
-import kotlinx.android.synthetic.main.rating_popup_view.view.*
 import com.movielibrary.ui.recyclerAdapters.CommentAdapter
+import kotlinx.android.synthetic.main.rating_popup_view.view.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -36,7 +36,15 @@ class MovieDetailsFragment : Fragment() {
             inflater, R.layout.movie_details_fragment, container, false
         )
 
-        val adapter = CommentAdapter()
+        val addCommentBinding: AddCommentFragmentBinding = DataBindingUtil.inflate(
+            inflater, R.layout.add_comment_fragment, container, false
+        )
+
+        val addCommentDialog = MaterialAlertDialogBuilder(context)
+            .setView(addCommentBinding.root)
+            .create();
+
+        val adapter = CommentAdapter(addCommentBinding, addCommentDialog)
 
         binding.lifecycleOwner = this
         binding.movieDetailsViewModel = movieDetailsViewModel
@@ -47,20 +55,32 @@ class MovieDetailsFragment : Fragment() {
             movieDetailsViewModel.rateMovie(it as ImageView)
         }
 
-        movieDetailsViewModel.initIcons(binding.userRatingIcon,binding.userFavouriteIcon, binding.userRating)
-        binding.movieDetailsViewModel!!.commentsList.observe(this, Observer {
+        movieDetailsViewModel.initIcons(
+            binding.userRatingIcon,
+            binding.userFavouriteIcon,
+            binding.userRating
+        )
+
+        binding.movieDetailsViewModel!!.commentsList.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
             }
         })
 
-        binding.materialButton.setOnClickListener {
-            val title = binding.commentTitle.text.toString()
-            val body = binding.commentBody.text.toString()
-            val movieId = args.movie.id
-            movieDetailsViewModel.insertComment(CommentEntity(title, body, movieId))
-            binding.commentTitle.setText("")
-            binding.commentBody.setText("")
+        binding.addCommentButton.setOnClickListener {
+            addCommentBinding.commentTitle.setText("")
+            addCommentBinding.commentBody.setText("")
+            addCommentBinding.materialButton.text = "Add comment"
+            addCommentBinding.materialButton.setOnClickListener {
+                val title = addCommentBinding.commentTitle.text.toString()
+                val body = addCommentBinding.commentBody.text.toString()
+                val movieId = args.movie.id
+                movieDetailsViewModel.insertComment(CommentEntity(title, body, movieId))
+                addCommentBinding.commentTitle.setText("")
+                addCommentBinding.commentBody.setText("")
+                addCommentDialog.dismiss()
+            }
+            addCommentDialog.show()
         }
 
         movieDetailsViewModel.addRecentlyViewedMovie(args.movie.id)
@@ -97,7 +117,7 @@ class MovieDetailsFragment : Fragment() {
         popupWindow.elevation = 5.0f
         popupWindow.isOutsideTouchable = true
         popupWindow.isFocusable = true
-        popupWindow.showAtLocation(binding.detailsLayout, Gravity.CENTER, 0, 0)
+
         if (!movieDetailsViewModel.rated) {
             popupView.remove_button.visibility = View.INVISIBLE
         }
@@ -115,10 +135,8 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-
     override fun onDestroyView() {
         movieDetailsViewModel.repository.detachSubscription(movieDetailsViewModel.commentsListener)
         super.onDestroyView()
-
     }
 }
