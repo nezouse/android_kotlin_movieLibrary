@@ -42,4 +42,28 @@ interface MoviesDao {
 
     @Query("SELECT * FROM comments_table WHERE movieId = :movieId")
     fun getCommentsForMovieSync(movieId: Int): List<CommentEntity>
+
+    @Query("SELECT rating FROM rated_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun getRatingForMovie(movieId: Int, userId: String): List<Float>
+
+    @Query("SELECT * FROM rated_movies_table WHERE userId = :userId")
+    fun getAllRatings(userId: String): List<RatedMovie>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRating(vararg ratedMovies:RatedMovie)
+
+    @Query("DELETE FROM rated_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun deleteRatedMovie(movieId: Int, userId: String)
+
+    @Query("SELECT movieId FROM liked_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun getLikedMovie(movieId: Int, userId: String): List<Int>
+
+    @Query("SELECT movieId FROM liked_movies_table WHERE userId = :userId")
+    fun getAllLikedMovies(userId: String): List<Int>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertLikedMovie(likedMovie: LikedMovie)
+
+    @Delete
+    fun deleteLikedMovie(likedMovie: LikedMovie)
 }

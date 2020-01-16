@@ -69,7 +69,7 @@ val appModule = module {
         )
     }
     viewModel { SearchMoviesViewModel(get(), get()) }
-    viewModel { (movieId: Int) -> MovieDetailsViewModel(get(), movieId) }
+    viewModel { (movieId: Int) -> MovieDetailsViewModel(get(), movieId, get()) }
 
     // fragment { MovieDetailsFragment(get()) }
 }

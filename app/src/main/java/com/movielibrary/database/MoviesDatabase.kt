@@ -8,8 +8,8 @@ import com.google.firebase.Timestamp
 import java.util.Date
 
 @Database(
-    entities = [MovieEntity::class, PopularMovieEntity::class, RecentlyViewedMovie::class, CommentEntity::class],
-    version = 10,
+    entities = [MovieEntity::class, PopularMovieEntity::class, RecentlyViewedMovie::class, CommentEntity::class, RatedMovie::class, LikedMovie::class],
+    version = 15,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

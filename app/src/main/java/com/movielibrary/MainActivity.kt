@@ -31,6 +31,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigation.setNavigationItemSelectedListener(this)
         FirebaseAuth.getInstance().currentUser?.let {
             navigation.menu.findItem(R.id.login).title = "Logout"
+            repository.updateFavouriteRoomMovies(it.uid)
+            repository.updateRoomRatings(it.uid)
         }
     }
 
