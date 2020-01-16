@@ -26,7 +26,7 @@ class FirebaseDao {
         return snapshots.toObjects()
     }
 
-    suspend fun getFavouriteMovies(userId: String): List<UserEntity> {
+    suspend fun getUser(userId: String): List<UserEntity> {
         val snapshots = db.collection("users").whereEqualTo("id", userId).get().await()
         return snapshots.toObjects()
     }

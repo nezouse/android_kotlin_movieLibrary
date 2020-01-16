@@ -14,7 +14,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.movielibrary.database.Repository
 import kotlinx.android.synthetic.main.main_activity.*
 import org.koin.android.ext.android.inject
-import org.koin.core.context.startKoin
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -32,6 +31,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigation.setNavigationItemSelectedListener(this)
         FirebaseAuth.getInstance().currentUser?.let {
             navigation.menu.findItem(R.id.login).title = "Logout"
+            repository.updateFavouriteRoomMovies(it.uid)
+            repository.updateRoomRatings(it.uid)
         }
     }
 

@@ -9,6 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.HashMap
 
 class Repository(private val firebaseDao: FirebaseDao, private val roomDao: MoviesDao) {
     private val TAG = "I/FIRESTORE"
@@ -85,7 +87,7 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
 
     suspend fun getUser(userId: String): List<UserEntity> {
         return try {
-            val favMovies: List<UserEntity> = firebaseDao.getFavouriteMovies(userId)
+            val favMovies: List<UserEntity> = firebaseDao.getUser(userId)
             favMovies
         } catch (e: Exception) {
             Log.e(TAG, "Error getting documents - favourite movies", e)
@@ -93,15 +95,48 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
         }
     }
 
-    suspend fun updateFavouriteMovies(userId: String, favouriteMovies:List<Int>) {
+    fun updateFavouriteRoomMovies(userId: String){
         coroutineScope.launch {
-            firebaseDao.updateFavouriteMovies(userId, favouriteMovies)
+            val user = firebaseDao.getUser(userId)
+            if (user.isNotEmpty()){
+                val favouriteMovies = user[0].favouriteMovies
+                favouriteMovies.forEach {
+                    roomDao.insertLikedMovie(LikedMovie(it, userId))
+                }
+            }
         }
     }
 
-    fun updateRatedMovies(userId: String, ratedMovies:HashMap<String, Float>) {
+    fun updateFavouriteFirestoreMovies(userId: String){
         coroutineScope.launch {
-            firebaseDao.updateRatedMovies(userId, ratedMovies)
+            val likedMovies = roomDao.getAllLikedMovies(userId)
+            firebaseDao.updateFavouriteMovies(userId, likedMovies)
+        }
+    }
+
+    fun updateRoomRatings(userId: String){
+        coroutineScope.launch {
+            val user = firebaseDao.getUser(userId)
+            if (user.isNotEmpty()){
+                val ratedMovies = user[0].ratedMovies
+                val roomRatings = LinkedList<RatedMovie>()
+
+                ratedMovies.forEach {
+                    roomRatings.add(RatedMovie(it.key.toInt(), userId, it.value))
+                }
+                roomDao.insertRating(*roomRatings.toTypedArray())
+            }
+        }
+    }
+
+    fun updateFirestoreRatings(userId: String){
+        coroutineScope.launch {
+            val ratedMovies = roomDao.getAllRatings(userId)
+            val firebaseRatings = HashMap<String, Float>()
+            ratedMovies.forEach {
+                firebaseRatings[it.movieId.toString()] = it.rating
+            }
+            firebaseDao.updateRatedMovies(userId, firebaseRatings)
         }
     }
 }

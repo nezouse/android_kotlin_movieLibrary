@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.snackbar.Snackbar
 import com.movielibrary.R
 import com.movielibrary.database.CommentEntity
 import com.movielibrary.databinding.MovieDetailsFragmentBinding
@@ -118,6 +117,10 @@ class MovieDetailsFragment : Fragment() {
 
     override fun onDestroyView() {
         movieDetailsViewModel.repository.detachSubscription(movieDetailsViewModel.commentsListener)
+        if(movieDetailsViewModel.user.id.isNotEmpty()) {
+            movieDetailsViewModel.repository.updateFavouriteFirestoreMovies(movieDetailsViewModel.user.id)
+            movieDetailsViewModel.repository.updateFirestoreRatings(movieDetailsViewModel.user.id)
+        }
         super.onDestroyView()
 
     }

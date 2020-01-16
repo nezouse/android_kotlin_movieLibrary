@@ -64,3 +64,22 @@ fun List<MovieEntity>.toPopularMovie(): List<PopularMovieEntity> {
         )
     }
 }
+
+@Entity(
+    tableName = "rated_movies_table",
+    primaryKeys = ["movieId", "userId"]
+)
+data class RatedMovie(
+    val movieId: Int = 0,
+    val userId: String = "",
+    val rating: Float = 0f
+)
+
+@Entity(
+    tableName = "liked_movies_table",
+    primaryKeys = ["movieId", "userId"]
+)
+data class LikedMovie(
+    val movieId: Int = 0,
+    val userId: String = ""
+)

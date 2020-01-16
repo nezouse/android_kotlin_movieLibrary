@@ -5,17 +5,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.movielibrary.database.CommentEntity
-import com.movielibrary.database.MovieEntity
-import com.movielibrary.database.Repository
-import com.movielibrary.database.UserEntity
+import com.movielibrary.database.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.LinkedList
 
-class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
+class MovieDetailsViewModel(
+    val repository: Repository,
+    val movieId: Int,
+    val roomDao: MoviesDao
+) :
     ViewModel() {
     var movie = MutableLiveData<MovieEntity>()
     var liked = MutableLiveData<Boolean>(false)
@@ -30,11 +30,11 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
 
     init {
         coroutineScope.launch {
-            user = getUser()
-            if(user.email.isNotEmpty()){
-                checkIfLiked()
-                checkIfRated()
+            FirebaseAuth.getInstance().currentUser?.uid?.let {
+                checkIfLiked(it)
+                checkIfRated(it)
             }
+            user = getUser()
         }
     }
 
@@ -50,14 +50,12 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         coroutineScope.launch {
             try {
                 if (user.email.isNotEmpty()) {
-                    val favouriteMovies = LinkedList(user.favouriteMovies)
+                    val likedMovie = LikedMovie(movieId, user.id)
                     if (!liked.value!!) {
-                        favouriteMovies.add(movie.value?.id)
-                        repository.updateFavouriteMovies(user.id, favouriteMovies)
+                        roomDao.insertLikedMovie(likedMovie)
                         liked.postValue(true)
                     } else {
-                        favouriteMovies.remove(movie.value?.id)
-                        repository.updateFavouriteMovies(user.id, favouriteMovies)
+                        roomDao.deleteLikedMovie(likedMovie)
                         liked.postValue(false)
                     }
                 }
@@ -71,11 +69,9 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         coroutineScope.launch {
             try {
                 if (user.email.isNotEmpty()) {
-                    val ratedMovies = user.ratedMovies
                     val correctRating = userRating * 2
-                    ratedMovies[movie.value?.id!!.toString()] = correctRating
 
-                    repository.updateRatedMovies(user.id, ratedMovies)
+                    roomDao.insertRating(RatedMovie(movieId, user.id, correctRating))
                     rating.postValue(correctRating)
                 }
             } catch (e: Exception) {
@@ -88,10 +84,7 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         coroutineScope.launch {
             try {
                 if (user.email.isNotEmpty()) {
-                    val ratedMovies = user.ratedMovies
-                    ratedMovies.remove(movie.value?.id.toString())
-
-                    repository.updateRatedMovies(user.id, ratedMovies)
+                    roomDao.deleteRatedMovie(movieId, user.id)
                     rating.postValue(null)
                 }
             } catch (e: Exception) {
@@ -100,19 +93,18 @@ class MovieDetailsViewModel(val repository: Repository, val movieId: Int) :
         }
     }
 
-    private fun checkIfLiked() {
-        val favouriteMovies = LinkedList(user.favouriteMovies)
-        if (favouriteMovies.contains(movie.value?.id)) {
-            liked.postValue(true)
-        }
+    private fun checkIfLiked(userId: String) {
+        roomDao.getLikedMovie(movieId, userId)
+            .firstOrNull()?.let {
+                liked.postValue(true)
+            }
     }
 
-    private fun checkIfRated() {
-        val ratedMovies = user.ratedMovies
-        if (ratedMovies.containsKey(movie.value?.id.toString())) {
-            val rating = user.ratedMovies[movie.value?.id.toString()]
-            this.rating.postValue(rating)
-        }
+    private fun checkIfRated(userId: String) {
+        roomDao.getRatingForMovie(movieId, userId)
+            .firstOrNull()?.let {
+                rating.postValue(it)
+            }
     }
 
     private suspend fun getUser(): UserEntity {

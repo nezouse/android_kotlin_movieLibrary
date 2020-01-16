@@ -1,10 +1,7 @@
 package com.movielibrary.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface MoviesDao {
@@ -35,4 +32,29 @@ interface MoviesDao {
 
     @Query("SELECT * FROM comments_table WHERE movieId = :movieId")
     fun getCommentsForMovie(movieId: Int): LiveData<List<CommentEntity>>
+
+
+    @Query("SELECT rating FROM rated_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun getRatingForMovie(movieId: Int, userId: String): List<Float>
+
+    @Query("SELECT * FROM rated_movies_table WHERE userId = :userId")
+    fun getAllRatings(userId: String): List<RatedMovie>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRating(vararg ratedMovies:RatedMovie)
+
+    @Query("DELETE FROM rated_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun deleteRatedMovie(movieId: Int, userId: String)
+
+    @Query("SELECT movieId FROM liked_movies_table WHERE movieId = :movieId AND userId = :userId")
+    fun getLikedMovie(movieId: Int, userId: String): List<Int>
+
+    @Query("SELECT movieId FROM liked_movies_table WHERE userId = :userId")
+    fun getAllLikedMovies(userId: String): List<Int>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertLikedMovie(likedMovie: LikedMovie)
+
+    @Delete
+    fun deleteLikedMovie(likedMovie: LikedMovie)
 }
