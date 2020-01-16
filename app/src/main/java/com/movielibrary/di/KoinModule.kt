@@ -9,9 +9,9 @@ import com.movielibrary.database.MoviesDatabase
 import com.movielibrary.database.Repository
 import com.movielibrary.network.MovieApiService
 import com.movielibrary.network.NullStringAdapter
+import com.movielibrary.ui.movieDetails.MovieDetailsViewModel
 import com.movielibrary.ui.popularMovies.PopularMoviesViewModel
 import com.movielibrary.ui.searchMovies.SearchMoviesViewModel
-import com.movielibrary.ui.movieDetails.MovieDetailsViewModel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.koin.android.viewmodel.dsl.viewModel
@@ -60,6 +60,7 @@ val appModule = module {
     single { provideRoomDao(get()) }
     single { provideFirebaseDao() }
     single { Repository(get(), get()) }
+    // single { CommentAdapter(get()) }
 
     viewModel {
         PopularMoviesViewModel(
@@ -69,4 +70,6 @@ val appModule = module {
     }
     viewModel { SearchMoviesViewModel(get(), get()) }
     viewModel { (movieId: Int) -> MovieDetailsViewModel(get(), movieId) }
+
+    // fragment { MovieDetailsFragment(get()) }
 }

@@ -43,6 +43,28 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
         }
     }
 
+    fun deleteUserComment(commentId: String) {
+        coroutineScope.launch {
+            try {
+                firebaseDao.deleteComment(commentId)
+                Log.i(TAG, "Comment deleted with ID: $commentId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error deleting comment", e)
+            }
+        }
+    }
+
+    fun editUserComment(comment: CommentEntity) {
+        coroutineScope.launch {
+            try {
+                firebaseDao.editComment(comment)
+                Log.i(TAG, "Comment edited with ID: ${comment.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error editing comment", e)
+            }
+        }
+    }
+
     fun getMovieComments(id: Int): LiveData<List<CommentEntity>> {
         return roomDao.getCommentsForMovie(id)
     }
@@ -57,7 +79,8 @@ class Repository(private val firebaseDao: FirebaseDao, private val roomDao: Movi
 
             coroutineScope.launch {
                 values?.let { snapshotsFromFirestore ->
-                    val commentsInCache = roomDao.getCommentsForMovieTemp(movieId)
+                    Log.w(TAG, "New snapshots from firestore")
+                    val commentsInCache = roomDao.getCommentsForMovieSync(movieId)
                     val commentsFromFirestore = snapshotsFromFirestore.toObjects<CommentEntity>()
                     val union = commentsInCache + commentsFromFirestore
                     val itemsOnlyInCache = union.filter {

@@ -7,8 +7,8 @@ import java.util.UUID
 
 @Entity(tableName = "comments_table")
 data class CommentEntity(
-    val title: String = "",
-    val body: String = "",
+    var title: String = "",
+    var body: String = "",
     val movieId: Int = -1,
     var userEmail: String = "",
     var date: Timestamp = Timestamp.now(),
